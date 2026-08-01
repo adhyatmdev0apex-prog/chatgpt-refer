@@ -26,7 +26,7 @@
     padding:32px 18px 60px;
   }
   header{
-    max-width:900px;
+    max-width:760px;
     margin:0 auto 34px;
     text-align:center;
   }
@@ -50,11 +50,11 @@
     font-family:'Helvetica Neue',Arial,sans-serif;
     font-size:13.5px;
     line-height:1.6;
-    max-width:560px;
+    max-width:520px;
     margin:0 auto;
   }
   .core{
-    max-width:900px;
+    max-width:760px;
     margin:0 auto 28px;
     display:flex;
     gap:10px;
@@ -73,7 +73,7 @@
   .pill b{color:var(--gold); font-weight:600;}
 
   .months{
-    max-width:1180px;
+    max-width:960px;
     margin:0 auto;
     display:grid;
     gap:26px;
@@ -102,6 +102,13 @@
     color:var(--dim);
     letter-spacing:.02em;
   }
+  .numbers-line{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11px;
+    color:var(--ember);
+    margin-top:6px;
+    line-height:1.5;
+  }
   .grid{
     display:grid;
     grid-template-columns:repeat(7,1fr);
@@ -118,14 +125,16 @@
     padding-bottom:2px;
   }
   .day{
-    min-height:112px;
+    aspect-ratio:1;
     border-radius:9px;
     border:1px solid var(--line);
     background:rgba(255,255,255,.015);
     display:flex;
-    flex-direction:column;
-    padding:6px 7px;
+    align-items:center;
+    justify-content:center;
     font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:12px;
+    color:var(--text);
     cursor:pointer;
     transition:background .15s, border-color .15s, transform .1s;
     position:relative;
@@ -144,28 +153,10 @@
   .day.special::after{
     content:'';
     position:absolute;
-    top:5px; right:6px;
-    width:5px; height:5px;
+    top:4px; right:4px;
+    width:4px; height:4px;
     border-radius:50%;
     background:var(--ember);
-  }
-  .day .num{
-    font-weight:700;
-    font-size:12.5px;
-    color:var(--text);
-    margin-bottom:3px;
-  }
-  .day.special .num{ color:var(--ember); }
-  .day .txt{
-    font-size:9.5px;
-    line-height:1.35;
-    color:var(--moon);
-  }
-  .day .tag{
-    margin-top:4px;
-    font-size:8.5px;
-    font-style:italic;
-    color:var(--ember);
   }
 
   /* detail panel */
@@ -181,7 +172,7 @@
   }
   .overlay.open{display:flex;}
   .panel{
-    max-width:440px;
+    max-width:460px;
     width:100%;
     background:var(--bg2);
     border:1px solid var(--gold);
@@ -199,7 +190,7 @@
   }
   .panel h2{
     margin:0 0 4px;
-    font-size:22px;
+    font-size:21px;
     color:var(--gold);
     font-weight:400;
   }
@@ -214,8 +205,17 @@
     font-size:15px;
     margin:0 0 12px;
   }
+  .panel .numbers{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11.5px;
+    color:var(--dim);
+    border-top:1px solid var(--line);
+    padding-top:12px;
+    margin-top:6px;
+    line-height:1.6;
+  }
   .panel .close{
-    margin-top:10px;
+    margin-top:14px;
     font-family:'Helvetica Neue',Arial,sans-serif;
     font-size:12px;
     color:var(--dim);
@@ -235,14 +235,6 @@
     color:var(--dim);
     line-height:1.7;
   }
-
-  @media print{
-    body{background:#fff; color:#111; padding:10px;}
-    .day{border-color:#ccc;}
-    .day .txt{color:#333;}
-    .overlay{display:none !important;}
-    .month-card{break-inside:avoid; page-break-after:always; border:none;}
-  }
 </style>
 </head>
 <body>
@@ -250,7 +242,7 @@
 <header>
   <div class="eyebrow">Vedic + Numerology Blueprint</div>
   <h1>The 2026 <em>Energy</em> Calendar</h1>
-  <p class="sub">Every date below already has that day's cycle vibe merged with that month's theme — nothing generic, no key to cross-reference. Tap a day for the full read.</p>
+  <p class="sub">Click a date to pull the full breakdown — day vibration blended with that month's theme, unwatered-down. Nothing's printed on the grid itself.</p>
 </header>
 
 <div class="core">
@@ -268,82 +260,94 @@
     <h2 id="p-title"></h2>
     <div class="theme-line" id="p-monththeme"></div>
     <p id="p-text"></p>
+    <div class="numbers" id="p-numbers"></div>
     <button class="close" onclick="closePanel()">Close</button>
   </div>
 </div>
 
 <footer>
-  Day-vibe cycle repeats every 31 days regardless of month length — but the outcome text below is unique to each date because it's blended with that month's theme. Oct 19 is flagged as your personal pivot point. For fun, not a plan.
+  Day-vibe cycle repeats every 31 days, but every date's prediction is generated fresh against that month's theme. Oct 19 is your Destiny Shift day — personal year turns to 7.
 </footer>
 
 <script>
 const dayVibes = [
-["Catalyst","sudden energy, urge to start something new"],
-["Mirror","sharp intuition, easy to read people"],
-["Expression","words flow, great for talking or writing"],
-["Anchor","discipline needed, minor delays likely"],
-["Pivot","fast changes, unexpected news possible"],
-["Sanctuary","focus pulls toward home and family"],
-["Mystic","craving silence, best ideas come solo"],
-["Sovereign","hard work pays off, a win lands"],
-["Reset","energy dips, good day to clean up"],
-["Solar Rebound","confidence surges, ready to lead"],
-["Intuitive Flash","gut feelings run accurate"],
-["Catalyst-Communicator","easy to convince others"],
-["Breakthrough","a stuck problem clears up"],
-["Explorer","craving something new, deep-dive mode"],
-["Magnet","charisma high, people drawn to you"],
-["Truth Seeker","low tolerance for fake talk"],
-["Powerhouse","handling responsibilities with ease"],
-["Humanist","compassion and fairness surge"],
-["Super-Charged","peak willpower, best day of the cycle"],
-["Empath","highly sensitive, keep the circle small"],
-["Creative Flow","ideas spark, peak creative output"],
-["Master Builder","big-picture, long-range thinking"],
-["Free Radical","routine feels confining, need movement"],
-["Caretaker","others lean on you for advice"],
-["Analyst","sharp, focused, error-spotting mind"],
-["Strategist","planning like it's a chess game"],
-["Closer","finish what's open, start nothing new"],
-["Executive Spark","leadership returns, low patience for slack"],
-["Psychic Shift","trust your first instinct"],
-["Visionary","optimism returns, sharp clear expression"],
-["Fortress","stubborn grit carries you through"],
+["Catalyst","sudden energy spike, a massive urge to start something new, high independence"],
+["Mirror","sharp intuition, easy to read people's hidden motives, high psychological awareness"],
+["Expression","words flow seamlessly — good for rapid typing, talking, or coding logic"],
+["Anchor","discipline required, minor structural delays, slow grinding progress"],
+["Pivot","fast, unpredictable changes, sudden adjustments, unexpected news"],
+["Sanctuary","focus pulls hard toward protecting your own home, space, and family"],
+["Mystic","deep craving for silence, working entirely alone, best ideas spark solo"],
+["Sovereign","hard work pays off cleanly, a decisive personal win lands"],
+["Reset","energy naturally dips — the day to clean up, purge old files, and rest"],
+["Solar Rebound","confidence surges to maximum, fully ready to lead"],
+["Intuitive Flash","gut feelings run hyper-accurate, sudden mental clarity out of nowhere"],
+["Catalyst-Communicator","high verbal precision, easy to convince or out-argue anyone"],
+["Breakthrough","a stuck, frustrating problem suddenly clears up"],
+["Explorer","extreme curiosity, deep-dive mode, craving new information"],
+["Magnet","charisma peaks, people are subconsciously drawn to your vibe"],
+["Truth Seeker","zero tolerance for fake talk, superficial people, or bad logic"],
+["Powerhouse","handling major responsibilities with complete operational ease"],
+["Humanist","compassion and fairness surge — standing up for rules or someone"],
+["Super-Charged","peak willpower, unmatched execution — the best day of the cycle"],
+["Empath","highly sensitive to environments, keep your circle extremely small"],
+["Creative Flow","rapid-fire ideas spark, peak mental generation and unique output"],
+["Master Builder","big-picture execution, long-range planning, mapping entire architectures"],
+["Free Radical","routine feels deeply confining, restlessness peaks, need movement"],
+["Caretaker","others lean on you heavily for logic or advice"],
+["Analyst","sharp, hyper-focused, error-spotting mind — easily tracking bugs or flaws"],
+["Strategist","planning moves like a high-level chess game"],
+["Closer","strong urge to finish what's open, wrap loose ends, start nothing new"],
+["Executive Spark","leadership drive returns, zero patience for slackers or slow behavior"],
+["Psychic Shift","heavy internal alignment, trusting your first instinct without doubt"],
+["Visionary","high mental optimism, sharp crystal-clear self-expression"],
+["Fortress","intense, stubborn grit carries you through any exhaustion or roadblock"],
 ];
 
 const months2026 = [
-{name:"January", days:31, theme:"Internal Mirror", themeDetail:"testing boundaries, sorting real friends"},
-{name:"February", days:28, theme:"Saturn Grind", themeDetail:"discipline, friction if you slack"},
-{name:"March", days:31, theme:"Solar Stage", themeDetail:"charisma peaks, leadership shines"},
-{name:"April", days:30, theme:"Deep Dive", themeDetail:"intense curiosity, niche rabbit holes"},
-{name:"May", days:31, theme:"Harmonic Wave", themeDetail:"creative breakthroughs, peaceful family time"},
-{name:"June", days:30, theme:"Solo Quest", themeDetail:"independence, trust your own method"},
-{name:"July", days:31, theme:"Infrastructure Shift", themeDetail:"routines and fitness take priority"},
-{name:"August", days:31, theme:"Mars Fire", themeDetail:"high energy, competitive, watch impatience"},
-{name:"September", days:30, theme:"Grand Purge", themeDetail:"clearing old habits before your birthday"},
-{name:"October", days:31, theme:"Destiny Shift", themeDetail:"Oct 19 personal year turns to 7"},
-{name:"November", days:30, theme:"Psychic Scorpio Ocean", themeDetail:"deep processing, sharp intuition"},
-{name:"December", days:31, theme:"Manifestation Peak", themeDetail:"recognition, grounded close to the year"},
+{name:"January", days:31, theme:"Internal Mirror", themeDetail:"testing personal boundaries, sorting out real friends",
+  numbers:"Sun(1) forces you to draw hard lines on who's actually in your corner. Ketu(7) runs the background audit on everyone's motives. Mars(9) has no patience for people who fail the test."},
+{name:"February", days:28, theme:"Saturn Grind", themeDetail:"heavy discipline, friction if you slack off",
+  numbers:"Sun(1) wants to lead but Saturn blocks shortcuts — grind or get exposed. Ketu(7) turns inward, auditing your own systems. Mars(9) gets irritable when structure feels slow."},
+{name:"March", days:31, theme:"Solar Stage", themeDetail:"charisma peaks, natural leadership shines",
+  numbers:"Sun(1) is home turf this month — leadership is effortless. Ketu(7) still wants depth over performance, don't get shallow. Mars(9) executes visibly, in front of an audience."},
+{name:"April", days:30, theme:"Deep Dive", themeDetail:"intense intellectual curiosity, chasing niche technical rabbit holes",
+  numbers:"Sun(1) takes a back seat to focus. Ketu(7) is fully activated — this is your best research and dev month. Mars(9) provides the stamina to grind through complexity."},
+{name:"May", days:31, theme:"Harmonic Wave", themeDetail:"creative breakthroughs, peaceful family time",
+  numbers:"Sun(1) softens, less need to dominate. Ketu(7) channels into creative synthesis instead of pure analysis. Mars(9) cools off — use the calm, don't fight it."},
+{name:"June", days:30, theme:"Solo Quest", themeDetail:"intense independence, trusting only your own precise methods",
+  numbers:"Sun(1) and Ketu(7) align hard — lead yourself, trust no committee. Mars(9) executes solo projects with zero need for validation."},
+{name:"July", days:31, theme:"Infrastructure Shift", themeDetail:"daily routines and personal fitness take absolute priority",
+  numbers:"Sun(1) demands consistency, not bursts. Ketu(7) analyzes your own systems and habits. Mars(9) wants physical output — don't let it sit idle."},
+{name:"August", days:31, theme:"Mars Fire", themeDetail:"high energy, fiercely competitive, major risk of impatience or temper",
+  numbers:"Sun(1) and Mars(9) both want to dominate — expect an aggressive, high-velocity month. Ketu(7) is the only thing keeping you from burning bridges out of impatience."},
+{name:"September", days:30, theme:"Grand Purge", themeDetail:"forcefully clearing out old habits right before your birthday month",
+  numbers:"Sun(1) wants a clean slate before the new personal year. Ketu(7) cuts anything that no longer serves the mission, without sentiment. Mars(9) executes the purge fast."},
+{name:"October", days:31, theme:"Destiny Shift", themeDetail:"major milestone — on Oct 19 your personal year permanently turns to 7",
+  numbers:"Sun(1) hands off control mid-month. Ketu(7) takes over as your dominant frequency going forward — deeper focus, less noise. Mars(9) executes the transition hard."},
+{name:"November", days:30, theme:"Psychic Scorpio Ocean", themeDetail:"deep mental processing, terrifyingly sharp intuition",
+  numbers:"Sun(1) recedes, ego takes a back seat. Ketu(7) is fully in charge — this is peak analytical and intuitive territory. Mars(9) gives you the drive to act on what you sense."},
+{name:"December", days:31, theme:"Manifestation Peak", themeDetail:"recognition, feeling grounded and steady close to the year",
+  numbers:"Sun(1) gets the credit it was chasing all year. Ketu(7)'s quiet work finally shows results. Mars(9) closes out strong, no loose threads."},
 ];
 
 const dowLabels = ["S","M","T","W","T","F","S"];
 
 const TEMPLATES = [
-  (dt,dd,mt,md) => `${dt} ${dd}, while ${mt} pulls in ${md}.`,
-  (dt,dd,mt,md) => `${dt} energy (${dd}) runs straight into ${mt} — ${md}.`,
-  (dt,dd,mt,md) => `${dt} meets ${mt}: ${dd}, plus ${md}.`,
-  (dt,dd,mt,md) => `With ${mt} in the background (${md}), today's ${dt} shows up as ${dd}.`,
+  (dt,dd,mt,md) => `${dt} energy hits — ${dd}. Slam it against ${mt}: ${md}. Net result: you don't ease into today, you force it.`,
+  (dt,dd,mt,md) => `${dt} meets ${mt}. Baseline is ${dd}, but ${md} is running underneath the whole day — don't ignore it, use it.`,
+  (dt,dd,mt,md) => `No softening this one: ${dt} gives you ${dd}, and ${mt}'s current of ${md} amplifies it. Move accordingly.`,
+  (dt,dd,mt,md) => `${mt} sets the stage — ${md}. On top of that, ${dt} kicks in: ${dd}. Read the room, then override it.`,
 ];
 
 function mergedLine(dayIdx, monthIdx, dayNum){
   const [dt, dd] = dayVibes[dayIdx];
-  const {theme:mt, themeDetail:md} = months2026[monthIdx];
+  const m = months2026[monthIdx];
   const tpl = TEMPLATES[(dayNum + monthIdx) % TEMPLATES.length];
-  return {dt, dd, mt, md, text: tpl(dt, dd, mt, md)};
+  return {dt, dd, mt:m.theme, md:m.themeDetail, text: tpl(dt, dd, m.theme, m.themeDetail)};
 }
 
 function dayOfWeek(monthIndex, day){
-  // 2026 Jan 1 is a Thursday
   const d = new Date(Date.UTC(2026, monthIndex, day));
   return d.getUTCDay();
 }
@@ -379,7 +383,6 @@ months2026.forEach((m, mi) => {
   });
 
   const firstDow = dayOfWeek(mi, 1);
-  // convert Sun=0..Sat=6 to align under S M T W T F S starting Sunday
   for(let i=0;i<firstDow;i++){
     const e = document.createElement('div');
     e.className = 'day empty';
@@ -390,27 +393,7 @@ months2026.forEach((m, mi) => {
     const cell = document.createElement('div');
     const isSpecial = (m.name==="October" && d===19);
     cell.className = 'day' + (isSpecial ? ' special' : '');
-
-    const dayIdx = (d-1) % 31;
-    const merged = mergedLine(dayIdx, mi, d);
-
-    const num = document.createElement('div');
-    num.className = 'num';
-    num.textContent = d;
-    cell.appendChild(num);
-
-    const txt = document.createElement('div');
-    txt.className = 'txt';
-    txt.textContent = merged.text;
-    cell.appendChild(txt);
-
-    if(isSpecial){
-      const tag = document.createElement('div');
-      tag.className = 'tag';
-      tag.textContent = 'Destiny Shift day';
-      cell.appendChild(tag);
-    }
-
+    cell.textContent = d;
     cell.addEventListener('click', () => openPanel(mi, d));
     grid.appendChild(cell);
   }
@@ -424,9 +407,12 @@ function openPanel(mi, d){
   const dayIdx = (d-1) % 31;
   const merged = mergedLine(dayIdx, mi, d);
   document.getElementById('p-date').textContent = `${m.name} ${ordinal(d)}, 2026`;
-  document.getElementById('p-title').textContent = (m.name==="October" && d===19) ? "Your Destiny Shift Day" : `${merged.dt} × ${merged.mt}`;
+  document.getElementById('p-title').textContent = (m.name==="October" && d===19)
+    ? "Destiny Shift Day — Personal Year → 7"
+    : `Day ${dayIdx+1}: ${merged.dt} meets ${merged.mt}`;
   document.getElementById('p-monththeme').textContent = `${m.theme} — ${m.themeDetail}`;
   document.getElementById('p-text').textContent = merged.text;
+  document.getElementById('p-numbers').textContent = m.numbers;
   document.getElementById('overlay').classList.add('open');
 }
 function closePanel(){
