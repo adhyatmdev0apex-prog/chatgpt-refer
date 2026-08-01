@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>2026 Energy Calendar — Adhyatm</title>
+<style>
+  :root{
+    --bg:#0b0f1e;
+    --bg2:#12172b;
+    --gold:#e8b464;
+    --ember:#c9764a;
+    --moon:#9fb4d9;
+    --text:#eef1fa;
+    --dim:#8892b0;
+    --line:#2a3152;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 20% -10%, #1b2244 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 10%, #241a3a 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Georgia', 'Iowan Old Style', serif;
+    padding:32px 18px 60px;
+  }
+  header{
+    max-width:760px;
+    margin:0 auto 34px;
+    text-align:center;
+  }
+  .eyebrow{
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--gold);
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(28px,5vw,42px);
+    margin:0 0 8px;
+    font-weight:400;
+    letter-spacing:.01em;
+  }
+  h1 em{color:var(--ember); font-style:normal;}
+  .sub{
+    color:var(--dim);
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:13.5px;
+    line-height:1.6;
+    max-width:520px;
+    margin:0 auto;
+  }
+  .core{
+    max-width:760px;
+    margin:0 auto 28px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+  }
+  .pill{
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.02);
+    padding:6px 14px;
+    border-radius:99px;
+    font-size:12px;
+    color:var(--moon);
+  }
+  .pill b{color:var(--gold); font-weight:600;}
+
+  .months{
+    max-width:960px;
+    margin:0 auto;
+    display:grid;
+    gap:26px;
+  }
+  .month-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0));
+    padding:20px 20px 14px;
+  }
+  .month-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:4px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .month-name{
+    font-size:20px;
+    color:var(--gold);
+  }
+  .month-theme{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11.5px;
+    color:var(--dim);
+    letter-spacing:.02em;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+    margin-top:14px;
+  }
+  .dow{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:10px;
+    color:var(--dim);
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    padding-bottom:2px;
+  }
+  .day{
+    aspect-ratio:1;
+    border-radius:9px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.015);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:12px;
+    color:var(--text);
+    cursor:pointer;
+    transition:background .15s, border-color .15s, transform .1s;
+    position:relative;
+  }
+  .day:hover{
+    background:rgba(232,180,100,.1);
+    border-color:var(--gold);
+    transform:translateY(-1px);
+  }
+  .day.empty{
+    visibility:hidden;
+  }
+  .day.special{
+    border-color:var(--ember);
+  }
+  .day.special::after{
+    content:'';
+    position:absolute;
+    top:4px; right:4px;
+    width:4px; height:4px;
+    border-radius:50%;
+    background:var(--ember);
+  }
+
+  /* detail panel */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(6,8,16,.72);
+    backdrop-filter:blur(3px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:10;
+  }
+  .overlay.open{display:flex;}
+  .panel{
+    max-width:440px;
+    width:100%;
+    background:var(--bg2);
+    border:1px solid var(--gold);
+    border-radius:16px;
+    padding:26px 26px 22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .panel .date{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--dim);
+    margin-bottom:10px;
+  }
+  .panel h2{
+    margin:0 0 4px;
+    font-size:22px;
+    color:var(--gold);
+    font-weight:400;
+  }
+  .panel .theme-line{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:12px;
+    color:var(--moon);
+    margin-bottom:16px;
+  }
+  .panel p{
+    line-height:1.65;
+    font-size:15px;
+    margin:0 0 12px;
+  }
+  .panel .close{
+    margin-top:10px;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:12px;
+    color:var(--dim);
+    border:1px solid var(--line);
+    background:none;
+    padding:8px 16px;
+    border-radius:99px;
+    cursor:pointer;
+  }
+  .panel .close:hover{border-color:var(--gold); color:var(--gold);}
+  footer{
+    max-width:640px;
+    margin:40px auto 0;
+    text-align:center;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11.5px;
+    color:var(--dim);
+    line-height:1.7;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Vedic + Numerology Blueprint</div>
+  <h1>The 2026 <em>Energy</em> Calendar</h1>
+  <p class="sub">Built from your day-of-month cycle and 2026's monthly themes. Tap any date to see what it combines to. Just for fun — not a substitute for how you actually plan your day.</p>
+</header>
+
+<div class="core">
+  <div class="pill">Birth Number <b>1</b> — Sun</div>
+  <div class="pill">Destiny Number <b>7</b> — Ketu</div>
+  <div class="pill">Expression Number <b>9</b> — Mars</div>
+  <div class="pill">Moon Sign <b>Vrishchika</b> (Scorpio)</div>
+</div>
+
+<div class="months" id="months"></div>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="date" id="p-date"></div>
+    <h2 id="p-title"></h2>
+    <div class="theme-line" id="p-monththeme"></div>
+    <p id="p-daytext"></p>
+    <p id="p-monthtext"></p>
+    <button class="close" onclick="closePanel()">Close</button>
+  </div>
+</div>
+
+<footer>
+  Day-vibe cycle repeats every 31 days regardless of month length. Oct 19 is flagged as your personal pivot point.
+</footer>
+
+<script>
+const dayVibes = [
+"Sudden burst of energy. An intense urge to start a new project, game, or habit. High independence.",
+"Intuition spikes — you read people's hidden motives easily. Minor friction if you're too blunt.",
+"Words flow easily. Great for presentations, writing, or jokes. Brainstorming feels effortless.",
+"The day demands discipline. Expect minor delays or glitches. Focus on finishing old tasks.",
+"High-velocity energy. Plans shift suddenly. Possible unexpected news or an urge to break routine.",
+"Focus shifts to home and family. Fiercely protective of your space. Good day for music.",
+"Deep internal focus. You want silence and no annoying people. Solo time brings good ideas.",
+"Instant-karma day. Hard work gets a win or praise. Good day to tackle the hardest problem.",
+"Stamina dips, a cycle closes. Good day to clean up, delete old files, and rest.",
+"A confidence wave hits. You feel ready to take charge and lead.",
+"Dreams or gut feelings run hyper-accurate. Possible déjà vu or a spot-on hunch.",
+"Ambition meets expression. Easy to convince others. Good for debate or group work.",
+"A stuck problem clears up through analytical thinking. Hard work pays off.",
+"Craving something new — deep dives, docs, new tech. Curiosity-led day.",
+"Charisma is high, people are drawn to you. Good for social moments or patching a fight.",
+"Fake talk annoys you today. You want raw honesty and real conversation.",
+"Executive energy. Responsibilities feel manageable. Good for organizing long-term goals.",
+"A surge of compassion or fairness. You might stand up for someone or help family.",
+"Your most potent day of the cycle. Willpower near 100% — whatever you lock onto gets done.",
+"Highly sensitive day — you absorb others' moods. Keep the circle small and calm.",
+"Ideas spark easily. Creative or strategic work hits its peak.",
+"Big-picture thinking. You're mapping out months ahead, not just today.",
+"Routine feels confining. You need movement or a change of scenery.",
+"You become the responsible one — people come to you for advice.",
+"Hyper-focused, analytical mind. Easy to spot errors or solve tricky problems.",
+"Life feels like a chess game — good for planning exams, competitions, projects.",
+"Wrap-up energy. Don't start anything new — finish what's already open.",
+"Leadership drive returns, low patience for slow or lazy energy around you.",
+"Emotional depth is high. First instinct is the reliable one today.",
+"Optimism returns. Big-picture clarity, sharp and witty expression.",
+"Mental grit and stubborn determination carry you through, even on a tiring day."
+];
+
+const months2026 = [
+{name:"January", theme:"The Internal Mirror — testing boundaries, figuring out who your real friends are", days:31},
+{name:"February", theme:"The Saturn Grind — demands discipline and scheduling; friction with authority if you slack", days:28},
+{name:"March", theme:"The Solar Stage — charisma peaks; projects, leadership, showcases go well", days:31},
+{name:"April", theme:"The Deep Dive — intense curiosity, deep dives into subjects or hobbies", days:30},
+{name:"May", theme:"The Harmonic Wave — creative breakthroughs, peaceful family time", days:31},
+{name:"June", theme:"The Solo Quest — high need for independence, trust your own methods", days:30},
+{name:"July", theme:"The Infrastructure Shift — fitness and routines take priority, grounding daydreams", days:31},
+{name:"August", theme:"The Mars Fire — high physical energy and competitiveness; watch impatience", days:31},
+{name:"September", theme:"The Grand Purge — clearing old habits and mess, prepping for your birthday", days:30},
+{name:"October", theme:"The Destiny Shift — your pivot point; Oct 19 shifts your personal year to 7", days:31},
+{name:"November", theme:"The Psychic Scorpio Ocean — deep emotional/mental processing, sharp intuition", days:30},
+{name:"December", theme:"The Manifestation Peak — recognition, rewards, closing the year grounded", days:31},
+];
+
+const dowLabels = ["S","M","T","W","T","F","S"];
+
+function dayOfWeek(monthIndex, day){
+  // 2026 Jan 1 is a Thursday
+  const d = new Date(Date.UTC(2026, monthIndex, day));
+  return d.getUTCDay();
+}
+
+const monthsEl = document.getElementById('months');
+
+months2026.forEach((m, mi) => {
+  const card = document.createElement('div');
+  card.className = 'month-card';
+
+  const head = document.createElement('div');
+  head.className = 'month-head';
+  head.innerHTML = `<div class="month-name">${m.name} 2026</div>`;
+  card.appendChild(head);
+
+  const themeEl = document.createElement('div');
+  themeEl.className = 'month-theme';
+  themeEl.textContent = m.theme;
+  card.appendChild(themeEl);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  dowLabels.forEach(l => {
+    const dl = document.createElement('div');
+    dl.className = 'dow';
+    dl.textContent = l;
+    grid.appendChild(dl);
+  });
+
+  const firstDow = dayOfWeek(mi, 1);
+  for(let i=0;i<firstDow;i++){
+    const e = document.createElement('div');
+    e.className = 'day empty';
+    grid.appendChild(e);
+  }
+
+  for(let d=1; d<=m.days; d++){
+    const cell = document.createElement('div');
+    cell.className = 'day';
+    if(m.name==="October" && d===19) cell.classList.add('special');
+    cell.textContent = d;
+    cell.addEventListener('click', () => openPanel(mi, d));
+    grid.appendChild(cell);
+  }
+
+  card.appendChild(grid);
+  monthsEl.appendChild(card);
+});
+
+function ordinal(n){
+  const s = ["th","st","nd","rd"], v = n%100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+
+function openPanel(mi, d){
+  const m = months2026[mi];
+  const vibeIndex = (d-1) % 31;
+  document.getElementById('p-date').textContent = `${m.name} ${ordinal(d)}, 2026`;
+  document.getElementById('p-title').textContent = m.name==="October" && d===19 ? "Your Destiny Shift Day" : `Day ${((d-1)%31)+1} of the cycle`;
+  document.getElementById('p-monththeme').textContent = m.theme;
+  document.getElementById('p-daytext').textContent = dayVibes[vibeIndex];
+  document.getElementById('p-monthtext').textContent = m.name==="October" && d===19
+    ? "This is the day your personal year shifts to 7 — extra weight on the willpower and intuition themes above."
+    : "";
+  document.getElementById('overlay').classList.add('open');
+}
+function closePanel(){
+  document.getElementById('overlay').classList.remove('open');
+}
+document.getElementById('overlay').addEventListener('click', (e)=>{
+  if(e.target.id==='overlay') closePanel();
+});
+</script>
+
+</body>
+</html>
