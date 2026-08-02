@@ -783,7 +783,7 @@ months2026.forEach((m, mi) => {
 
   const head = document.createElement('div');
   head.className = 'month-head';
-  head.innerHTML = `<div class="month-name">${m.name} 2026</div>` + (m.real || m.specialReal ? `<div class="real-tag">Real Nakshatra sourced</div>` : '');
+  head.innerHTML = `<div class="month-name">${m.name} 2026</div>`;
   card.appendChild(head);
 
   const themeEl = document.createElement('div');
@@ -823,8 +823,6 @@ months2026.forEach((m, mi) => {
 
 function openPanel(mi, d){
   const m = months2026[mi];
-  
-  // Fetch hardcoded unique synthesis
   const uniqueData = dailyData[mi][d-1];
   const titleStr = uniqueData[0];
   const textStr = uniqueData[1];
@@ -835,20 +833,14 @@ function openPanel(mi, d){
 
   const realEl = document.getElementById('p-real');
   const taraEl = document.getElementById('p-tara');
-  let realNakshatra = null;
+  
+  realEl.style.display = 'none';
 
+  let realNakshatra = null;
   if(m.real && m.real[d-1]){
     realNakshatra = m.real[d-1];
-    realEl.style.display = 'block';
-    realEl.className = 'real-block';
-    realEl.textContent = `Real sourced data: Moon in ${realNakshatra} Nakshatra on this date (Ujjain panchang).`;
   } else if(m.specialReal && m.specialReal[d]){
-    realEl.style.display = 'block';
-    realEl.className = 'real-block';
-    realEl.textContent = `Real sourced data: Moon Nakshatra on this date — ${m.specialReal[d]} (Ujjain panchang).`;
     realNakshatra = "Shravana";
-  } else {
-    realEl.style.display = 'none';
   }
 
   if(realNakshatra){
