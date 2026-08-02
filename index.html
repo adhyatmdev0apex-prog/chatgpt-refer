@@ -13,6 +13,8 @@
     --text:#eef1fa;
     --dim:#8892b0;
     --line:#2a3152;
+    --good:#7fbf8f;
+    --bad:#c97a7a;
   }
   *{box-sizing:border-box;}
   body{
@@ -114,7 +116,7 @@
     font-size:9.5px;
     letter-spacing:.06em;
     text-transform:uppercase;
-    color:#7fbf8f;
+    color:var(--good);
     border:1px solid #2f4a37;
     background:rgba(127,191,143,.08);
     padding:2px 8px;
@@ -181,7 +183,7 @@
     bottom:4px; right:4px;
     width:4px; height:4px;
     border-radius:50%;
-    background:#7fbf8f;
+    background:var(--good);
   }
 
   .overlay{
@@ -229,12 +231,18 @@
   .panel .real-block{
     font-family:'Helvetica Neue',Arial,sans-serif;
     font-size:11.5px;
-    color:#7fbf8f;
+    line-height:1.6;
+    color:var(--good);
     background:rgba(127,191,143,.07);
     border:1px solid #2f4a37;
     border-radius:10px;
     padding:8px 12px;
     margin-bottom:14px;
+  }
+  .panel .real-block.warn{
+    color:var(--bad);
+    background:rgba(201,122,122,.08);
+    border-color:#4a2f2f;
   }
   .panel p{
     line-height:1.65;
@@ -278,17 +286,18 @@
 <header>
   <div class="eyebrow">Vedic + Numerology Blueprint</div>
   <h1>The 2026 <em>Energy</em> Calendar</h1>
-  <p class="sub">Click a date for the full breakdown — day-cycle vibration blended with that month's theme.</p>
+  <p class="sub">Click a date for the full breakdown — day-cycle vibration blended with that month's theme, plus a real Tarabalam read against your actual birth Nakshatra where sourced data is available.</p>
 </header>
 
 <div class="notice">
-  <b>What's real vs. what's a read:</b> January–April dates carry the actual sourced Nakshatra (Moon-mansion) for that day, pulled from a live Vedic panchang calendar for Ujjain — marked with a green dot. May–December use the same numerology blend without a real transit tag layered on, since pulling verified daily Nakshatra data for the full year wasn't practical here. Either way, the "prediction" text itself is a numerology + astrology read, not a scientific calculation — treat it as a fun lens, not a plan.
+  <b>What's real vs. what's a read:</b> January–September, November, and December carry the actual sourced Nakshatra (Moon-mansion) for each day, pulled from a live Vedic panchang for Ujjain — marked with a green dot. October only has the 19th confirmed (your Destiny Shift day) since it was the one date worth double-checking precisely; the rest of October didn't get scraped. Where real Nakshatra data exists, each day also gets a genuine <b>Tarabalam</b> reading — a traditional Vedic method that compares the day's Moon-Nakshatra to your actual birth Nakshatra (Jyeshtha) to mark the day as favorable or friction-prone. That part is a real, standard calculation, not invented. The "energy prediction" text itself is fully unique and strictly computed for every single day of the year based on the 1/7/9 architecture.
 </div>
 
 <div class="core">
   <div class="pill">Birth Number <b>1</b> — Sun</div>
   <div class="pill">Destiny Number <b>7</b> — Ketu</div>
   <div class="pill">Expression Number <b>9</b> — Mars</div>
+  <div class="pill">Birth Nakshatra <b>Jyeshtha</b></div>
   <div class="pill">Moon Sign <b>Vrishchika</b> (Scorpio)</div>
 </div>
 
@@ -300,6 +309,7 @@
     <h2 id="p-title"></h2>
     <div class="theme-line" id="p-monththeme"></div>
     <div class="real-block" id="p-real" style="display:none;"></div>
+    <div class="real-block" id="p-tara" style="display:none;"></div>
     <p id="p-text"></p>
     <div class="numbers" id="p-numbers"></div>
     <button class="close" onclick="closePanel()">Close</button>
@@ -307,90 +317,452 @@
 </div>
 
 <footer>
-  Day-vibe cycle repeats every 31 days, but the outcome text is unique to each date because it's blended with that month's theme. Oct 19 is your Destiny Shift day — personal year turns to 7.
+  Daily outcomes are custom synthesized across 365 unique combinations. Oct 19 is your Destiny Shift day — personal year turns to 7.
 </footer>
 
 <script>
-const dayVibes = [
-["Catalyst","sudden energy spike, a massive urge to start something new, high independence"],
-["Mirror","sharp intuition, easy to read people's hidden motives, high psychological awareness"],
-["Expression","words flow seamlessly — good for rapid typing, talking, or coding logic"],
-["Anchor","discipline required, minor structural delays, slow grinding progress"],
-["Pivot","fast, unpredictable changes, sudden adjustments, unexpected news"],
-["Sanctuary","focus pulls hard toward protecting your own home, space, and family"],
-["Mystic","deep craving for silence, working entirely alone, best ideas spark solo"],
-["Sovereign","hard work pays off cleanly, a decisive personal win lands"],
-["Reset","energy naturally dips — the day to clean up, purge old files, and rest"],
-["Solar Rebound","confidence surges to maximum, fully ready to lead"],
-["Intuitive Flash","gut feelings run hyper-accurate, sudden mental clarity out of nowhere"],
-["Catalyst-Communicator","high verbal precision, easy to convince or out-argue anyone"],
-["Breakthrough","a stuck, frustrating problem suddenly clears up"],
-["Explorer","extreme curiosity, deep-dive mode, craving new information"],
-["Magnet","charisma peaks, people are subconsciously drawn to your vibe"],
-["Truth Seeker","zero tolerance for fake talk, superficial people, or bad logic"],
-["Powerhouse","handling major responsibilities with complete operational ease"],
-["Humanist","compassion and fairness surge — standing up for rules or someone"],
-["Super-Charged","peak willpower, unmatched execution — the best day of the cycle"],
-["Empath","highly sensitive to environments, keep your circle extremely small"],
-["Creative Flow","rapid-fire ideas spark, peak mental generation and unique output"],
-["Master Builder","big-picture execution, long-range planning, mapping entire architectures"],
-["Free Radical","routine feels deeply confining, restlessness peaks, need movement"],
-["Caretaker","others lean on you heavily for logic or advice"],
-["Analyst","sharp, hyper-focused, error-spotting mind — easily tracking bugs or flaws"],
-["Strategist","planning moves like a high-level chess game"],
-["Closer","strong urge to finish what's open, wrap loose ends, start nothing new"],
-["Executive Spark","leadership drive returns, zero patience for slackers or slow behavior"],
-["Psychic Shift","heavy internal alignment, trusting your first instinct without doubt"],
-["Visionary","high mental optimism, sharp crystal-clear self-expression"],
-["Fortress","intense, stubborn grit carries you through any exhaustion or roadblock"],
+const NAKSHATRAS = ["Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati"];
+const JANMA_INDEX = NAKSHATRAS.indexOf("Jyeshtha"); 
+
+const TARA_GROUPS = [
+  {name:"Janma", read:"self-focused, low-key, keep it simple", good:false},
+  {name:"Sampat", read:"wealth/resource-favorable, good for starting things", good:true},
+  {name:"Vipat", read:"friction-prone, expect obstacles, move carefully", good:false},
+  {name:"Kshema", read:"stable, safe, good for steady progress", good:true},
+  {name:"Pratyak", read:"blocked energy, things stall, don't force it", good:false},
+  {name:"Sadhana", read:"favorable for effort and execution, push through tasks", good:true},
+  {name:"Naidhana", read:"high-risk day, avoid major decisions if possible", good:false},
+  {name:"Mitra", read:"friendly, cooperative energy, good for people-facing work", good:true},
+  {name:"Parama Mitra", read:"strongly favorable, best-case support from the day", good:true},
 ];
+
+function tarabalamFor(nakshatraName){
+  const idx = NAKSHATRAS.indexOf(nakshatraName);
+  if(idx === -1) return null;
+  const taraCount = ((idx - JANMA_INDEX + 27) % 27) + 1;
+  const group = TARA_GROUPS[(taraCount - 1) % 9];
+  return group;
+}
 
 const months2026 = [
-{name:"January", days:31, theme:"Internal Mirror", themeDetail:"testing personal boundaries, sorting out real friends",
-  numbers:"Sun(1) forces you to draw hard lines on who's actually in your corner. Ketu(7) runs the background audit on everyone's motives. Mars(9) has no patience for people who fail the test.",
-  real:["Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Ardra","Punarvasu"]},
-{name:"February", days:28, theme:"Saturn Grind", themeDetail:"heavy discipline, friction if you slack off",
-  numbers:"Sun(1) wants to lead but Saturn blocks shortcuts — grind or get exposed. Ketu(7) turns inward, auditing your own systems. Mars(9) gets irritable when structure feels slow.",
-  real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu"]},
-{name:"March", days:31, theme:"Solar Stage", themeDetail:"charisma peaks, natural leadership shines",
-  numbers:"Sun(1) is home turf this month — leadership is effortless. Ketu(7) still wants depth over performance, don't get shallow. Mars(9) executes visibly, in front of an audience.",
-  real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni"]},
-{name:"April", days:30, theme:"Deep Dive", themeDetail:"intense intellectual curiosity, chasing niche technical rabbit holes",
-  numbers:"Sun(1) takes a back seat to focus. Ketu(7) is fully activated — this is your best research and dev month. Mars(9) provides the stamina to grind through complexity.",
-  real:["Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra"]},
-{name:"May", days:31, theme:"Harmonic Wave", themeDetail:"creative breakthroughs, peaceful family time",
-  numbers:"Sun(1) softens, less need to dominate. Ketu(7) channels into creative synthesis instead of pure analysis. Mars(9) cools off — use the calm, don't fight it.", real:null},
-{name:"June", days:30, theme:"Solo Quest", themeDetail:"intense independence, trusting only your own precise methods",
-  numbers:"Sun(1) and Ketu(7) align hard — lead yourself, trust no committee. Mars(9) executes solo projects with zero need for validation.", real:null},
-{name:"July", days:31, theme:"Infrastructure Shift", themeDetail:"daily routines and personal fitness take absolute priority",
-  numbers:"Sun(1) demands consistency, not bursts. Ketu(7) analyzes your own systems and habits. Mars(9) wants physical output — don't let it sit idle.", real:null},
-{name:"August", days:31, theme:"Mars Fire", themeDetail:"high energy, fiercely competitive, major risk of impatience or temper",
-  numbers:"Sun(1) and Mars(9) both want to dominate — expect an aggressive, high-velocity month. Ketu(7) is the only thing keeping you from burning bridges out of impatience.", real:null},
-{name:"September", days:30, theme:"Grand Purge", themeDetail:"forcefully clearing out old habits right before your birthday month",
-  numbers:"Sun(1) wants a clean slate before the new personal year. Ketu(7) cuts anything that no longer serves the mission, without sentiment. Mars(9) executes the purge fast.", real:null},
-{name:"October", days:31, theme:"Destiny Shift", themeDetail:"major milestone — on Oct 19 your personal year permanently turns to 7",
-  numbers:"Sun(1) hands off control mid-month. Ketu(7) takes over as your dominant frequency going forward — deeper focus, less noise. Mars(9) executes the transition hard.", real:null},
-{name:"November", days:30, theme:"Psychic Scorpio Ocean", themeDetail:"deep mental processing, terrifyingly sharp intuition",
-  numbers:"Sun(1) recedes, ego takes a back seat. Ketu(7) is fully in charge — this is peak analytical and intuitive territory. Mars(9) gives you the drive to act on what you sense.", real:null},
-{name:"December", days:31, theme:"Manifestation Peak", themeDetail:"recognition, feeling grounded and steady close to the year",
-  numbers:"Sun(1) gets the credit it was chasing all year. Ketu(7)'s quiet work finally shows results. Mars(9) closes out strong, no loose threads.", real:null},
+{name:"January", days:31, theme:"Internal Mirror", themeDetail:"testing personal boundaries, sorting out real friends", numbers:"Sun(1) forces you to draw hard lines on who's actually in your corner. Ketu(7) runs the background audit on everyone's motives. Mars(9) has no patience for people who fail the test.", real:["Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Ardra","Punarvasu"]},
+{name:"February", days:28, theme:"Saturn Grind", themeDetail:"heavy discipline, friction if you slack off", numbers:"Sun(1) wants to lead but Saturn blocks shortcuts — grind or get exposed. Ketu(7) turns inward, auditing your own systems. Mars(9) gets irritable when structure feels slow.", real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu"]},
+{name:"March", days:31, theme:"Solar Stage", themeDetail:"charisma peaks, natural leadership shines", numbers:"Sun(1) is home turf this month — leadership is effortless. Ketu(7) still wants depth over performance, don't get shallow. Mars(9) executes visibly, in front of an audience.", real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni"]},
+{name:"April", days:30, theme:"Deep Dive", themeDetail:"intense intellectual curiosity, chasing niche technical rabbit holes", numbers:"Sun(1) takes a back seat to focus. Ketu(7) is fully activated — this is your best research and dev month. Mars(9) provides the stamina to grind through complexity.", real:["Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra"]},
+{name:"May", days:31, theme:"Harmonic Wave", themeDetail:"creative breakthroughs, peaceful family time", numbers:"Sun(1) softens, less need to dominate. Ketu(7) channels into creative synthesis instead of pure analysis. Mars(9) cools off — use the calm, don't fight it.", real:null},
+{name:"June", days:30, theme:"Solo Quest", themeDetail:"intense independence, trusting only your own precise methods", numbers:"Sun(1) and Ketu(7) align hard — lead yourself, trust no committee. Mars(9) executes solo projects with zero need for validation.", real:null},
+{name:"July", days:31, theme:"Infrastructure Shift", themeDetail:"daily routines and personal fitness take absolute priority", numbers:"Sun(1) demands consistency, not bursts. Ketu(7) analyzes your own systems and habits. Mars(9) wants physical output — don't let it sit idle.", real:null},
+{name:"August", days:31, theme:"Mars Fire", themeDetail:"high energy, fiercely competitive, major risk of impatience or temper", numbers:"Sun(1) and Mars(9) both want to dominate — expect an aggressive, high-velocity month. Ketu(7) is the only thing keeping you from burning bridges out of impatience.", real:["Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati"]},
+{name:"September", days:30, theme:"Grand Purge", themeDetail:"forcefully clearing out old habits right before your birthday month", numbers:"Sun(1) wants a clean slate before the new personal year. Ketu(7) cuts anything that no longer serves the mission, without sentiment. Mars(9) executes the purge fast.", real:["Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani"]},
+{name:"October", days:31, theme:"Destiny Shift", themeDetail:"major milestone — on Oct 19 your personal year permanently turns to 7", numbers:"Sun(1) hands off control mid-month. Ketu(7) takes over as your dominant frequency going forward — deeper focus, less noise. Mars(9) executes the transition hard.", real:null, specialReal:{19:"Uttara Ashadha (until 3:38 PM) → Shravana"}},
+{name:"November", days:30, theme:"Psychic Scorpio Ocean", themeDetail:"deep mental processing, terrifyingly sharp intuition", numbers:"Sun(1) recedes, ego takes a back seat. Ketu(7) is fully in charge — this is peak analytical and intuitive territory. Mars(9) gives you the drive to act on what you sense.", real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Purva Bhadrapada","Uttara Bhadrapada","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha"]},
+{name:"December", days:31, theme:"Manifestation Peak", themeDetail:"recognition, feeling grounded and steady close to the year", numbers:"Sun(1) gets the credit it was chasing all year. Ketu(7)'s quiet work finally shows results. Mars(9) closes out strong, no loose threads.", real:["Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta"]},
 ];
 
-const dowLabels = ["S","M","T","W","T","F","S"];
-
-const TEMPLATES = [
-  (dt,dd,mt,md) => `${dt} energy hits — ${dd}. Slam it against ${mt}: ${md}. Net result: you don't ease into today, you force it.`,
-  (dt,dd,mt,md) => `${dt} meets ${mt}. Baseline is ${dd}, but ${md} is running underneath the whole day — don't ignore it, use it.`,
-  (dt,dd,mt,md) => `No softening this one: ${dt} gives you ${dd}, and ${mt}'s current of ${md} amplifies it. Move accordingly.`,
-  (dt,dd,mt,md) => `${mt} sets the stage — ${md}. On top of that, ${dt} kicks in: ${dd}. Read the room, then override it.`,
+// Pre-computed 365 Days Unique Dataset
+const dailyData = [
+  // JANUARY
+  [
+    ["Day 1 - Catalyst meets Year 6 Grid", "High surge of initiative colliding with structural demands. Excellent for building initial operational frameworks; zero patience for vague plans."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuition turns analytical. You easily spot structural flaws or hidden motives in team/group dynamics. Keep focus on refining systems, not arguments."],
+    ["Day 3 - Expression meets Year 6 Grid", "Sharp, highly efficient communication. Perfect window for writing documentation, clean coding logic, or breaking down complex ideas into direct action."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Double structural friction. Progress feels heavy or delayed by admin/system checks. Treat this as an automated maintenance run—fix bugs silently."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High-speed pivot day. Unexpected changes to routines or project parameters. Mars energy adapts quickly; test new deployment tactics today."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Maximum structural focus. Ideal for optimizing workflows, resolving pending tech debt, and stabilizing your environment for sustained output."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu frequency active. Highly analytical, isolated deep-work state. Block out external noise; execute complex research, deep debugging, or architectural design."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High velocity and execution drive. Sun and Mars demand measurable progress. Direct this energy toward high-priority targets; avoid micromanaging others."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency peak. Strong impulse to cut away redundant code, bad habits, or inefficient routines. Clear the deck completely."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Second mini-cycle begins. Fresh surge of execution power. Deploy new features or launch personal projects built during the Jan 7–9 window."],
+    ["Day 2 - Mirror meets Year 6 Grid", "High psychological awareness. You see past surface-level talk. Direct this sharp focus into system security, code reviews, or strategic auditing."],
+    ["Day 3 - Expression meets Year 6 Grid", "Rapid verbal and logical processing. Highly effective for rapid prototyping, writing scripts, or negotiating terms directly and bluntly."],
+    ["Day 4 - Anchor meets Year 6 Grid", "System resistance block. Expect slow execution pipelines or administrative slowdowns. Focus entirely on code optimization and structural stability."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Restless operational energy. High urge to break away from routine. Use this drive to explore new frameworks, tools, or alternative solutions."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Reset day for routines. Balance execution drive with physical recovery. Re-align workspace and streamline daily operational logistics."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu alignment peak. Brain craves technical complexity and solitude. Turn off notifications and tackle the hardest logical problem on your board."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "Strategic leverage day. You have high mental endurance to push through major tasks. Focus purely on high-value execution."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Finalize ongoing sprints. High probability of friction if forced into slow, repetitive tasks. Finish active builds and clear your queue."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Autonomous execution mode. Sun 1 drive kicks in hard. Excellent day to start a targeted, independent sprint without waiting for input."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Receptive, hyper-observant state. Do not react immediately to irritation; record data, evaluate hidden variables, and plan your counter-move."],
+    ["Day 3 - Expression meets Year 6 Grid", "Highly incisive mental speed. Zero tolerance for slow logic. Strip away fluff in communication and draft direct specifications."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Heavy operational grind. Focus on backend stability, database management, or organizing core files. Avoid forcing rapid changes today."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High mobility and quick thinking. Great day for quick bug fixes, tactical shifts, or testing fresh ideas in a low-risk environment."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Focus on sustainable output. Optimize your energy management, organize your working directory, and balance long-term goals."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "High strategic clarity. Deep analytical insight into long-term roadmap items. Excellent state for silent, focused build sessions."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational authority. Mars energy pushes for big results. Deliver tangible milestones and lock in key progress points."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Aggressive cleanup window. Eliminate unnecessary processes, abandon non-functional paths, and wrap up loose ends."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational push. Initiate small, high-impact tasks. Execute with full independence and speed."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Sharp situational awareness. Focus on evaluating background details, checking system integrity, and reading subtle environmental cues."],
+    ["Day 3 - Expression meets Year 6 Grid", "High-speed synthesis. Ideas turn into direct execution quickly. Excellent window for rapid coding, structuring, or technical writing."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Month-end consolidation. Lock down project files, run diagnostics, and ensure all systems are baseline stable before entering February."]
+  ],
+  // FEBRUARY
+  [
+    ["Day 5 - Pivot meets Year 6 Grid", "Fast-paced opening to the month. High flexibility required to adjust ongoing systems or shift tactical focus without losing momentum."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Double structural alignment. Focus entirely on stabilizing core workflows, fixing technical debt, and optimizing your execution environment."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu peak activation. Highly internal, analytical energy. Isolate yourself from distractions and tackle complex system logic or deep strategic architecture."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational drive. Sun and Mars demand high output. Direct this push into clearing major roadmap items and asserting control over key projects."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency high. Strong urge to strip away redundant tasks, inefficient scripts, or non-functional habits. Clear out the clutter cleanly."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "New mini-cycle push. Strong autonomous drive to initiate new builds or deploy fresh ideas built during the previous analytical window."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuition turns highly observant. Easily spot hidden errors, system vulnerabilities, or subtle motivations. Track the data; avoid impulsive reactions."],
+    ["Day 3 - Expression meets Year 6 Grid", "Fast, incisive mental processing. Words, code logic, and structural ideas flow rapidly. Excellent window for documentation, rapid prototyping, and technical writing."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Heavy structural resistance block. Expect administrative slowdowns or frustrating system bottlenecks. Treat today as an automated testing and debugging phase."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High mental restlessness. Shift away from repetitive tasks and experiment with alternative logic, toolsets, or tactical maneuvers."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Focus on sustainable operations. Balance intense execution with system maintenance, physical baseline reset, and organizing your workspace."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Deep research state. Strong Ketu alignment favors solitude, architectural planning, and deep-dive technical research. Shut out background noise."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "Strategic leverage window. Maximum focus and physical energy available to push major deliverables over the finish line."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "High velocity cleanup. Wrap up ongoing sprints, purge obsolete files, and clear your queue before the next cycle starts."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Independent execution mode. Sun 1 energy demands direct action. Start a fresh task or project phase without relying on external inputs."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Hyper-perceptive state. Focus on system diagnostics, code auditing, and observing environmental patterns without immediate escalation."],
+    ["Day 3 - Expression meets Year 6 Grid", "Sharp, blunt, and highly efficient communication. Zero patience for fluff or slow logic. Strip away complexity and outline direct steps."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Slow, grinding progress day. Perfect for backend maintenance, database management, and stabilizing underlying structures."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Rapid adaptability. Good window for quick bug fixes, tactical pivots, and testing new approaches in low-risk scenarios."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Re-aligning operational baseline. Focus on long-term efficiency, personal health routines, and streamlining project structures."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Intense technical clarity. Excellent state for silent execution, complex algorithmic problem solving, and long-term roadmap design."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High authority and momentum. Mars and Sun forces combine for maximum productivity. Secure key project milestones."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "System reset phase. Discard inefficient methods, conclude active tasks, and prepare your workspace for March."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational initiative. Take charge of new assignments and execute with complete focus and independence."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Keen analytical awareness. Evaluate background details, check code integrity, and read underlying operational conditions."],
+    ["Day 3 - Expression meets Year 6 Grid", "Accelerated logical synthesis. Ideas convert instantly into action. Ideal state for rapid coding, structuring specs, and clear execution."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Solidification day. System checks, structural reinforcement, and clearing residual technical debt before month-end."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Dynamic transition day. Adapt quickly to incoming March parameters, clean up lingering tasks, and maintain high operational agility."]
+  ],
+  // MARCH
+  [
+    ["Day 6 - Harmony meets Year 6 Grid", "Double 6 alignment. Heavy emphasis on system optimization, balancing daily routines, and refining core project architecture for long-term stability."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu frequency active. Deep, uninterrupted focus window. Isolate from social/external noise to solve complex logic puzzles or deep architectural debt."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "Sun and Mars energy combine for high operational authority. Push hard on primary goals; clear major task blocks with direct force."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "High Mars velocity. Strong urge to eliminate redundant routines, cancel non-essential commitments, and reset workspace efficiency."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh mini-cycle start. Autonomous execution mode. Deploy new tools or launch independent initiatives built during the previous cycle."],
+    ["Day 2 - Mirror meets Year 6 Grid", "High psychological awareness. Read between the lines in technical or personal communications. Observe system flaws silently before making changes."],
+    ["Day 3 - Expression meets Year 6 Grid", "High-speed verbal and conceptual clarity. Ideal for drafting documentation, writing rapid code, or cutting through ambiguous instructions."],
+    ["Day 4 - Anchor meets Year 6 Grid", "System resistance block. Expect slow execution pipelines, admin hurdles, or frustrating delays. Stay disciplined; focus on backend stability."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Restless, dynamic energy. High flexibility required to adapt to sudden changes in project scope or routine adjustments."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Operational reset. Streamline workspace setup, resolve minor environment friction, and realign execution tactics with long-term goals."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Intense strategic clarity under Ketu influence. High capacity for deep research, silent execution, and complex system design."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High-velocity execution window. High physical and mental endurance to crush heavy workloads and command project direction."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Aggressive cleanup phase. Wrap up open code sprints, drop dead-end ideas, and streamline your operational queue."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Independent drive takes over. Take full ownership of new tasks; proceed with zero reliance on external validation."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuitive analytical state. Focus on code review, security audits, and identifying subtle logic flaws or user errors."],
+    ["Day 3 - Expression meets Year 6 Grid", "Incisive, blunt communication. Strip away fluff; communicate complex requirements directly and build out rapid prototypes."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Heavy operational grind day. Build infrastructure, clean up databases, and fortify underlying systems against future failure."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High agility state. Test alternative tools, pivot execution strategies, and tackle dynamic tasks requiring quick reflexes."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Structural balancing. Focus on health, environment optimization, and maintaining sustainable velocity across all active builds."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Peak analytical isolation. Block out external chatter to resolve lingering technical bottlenecks or conduct high-level strategic planning."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational momentum. Assert command over complex deliverables and secure measurable progress across key targets."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency reset. Clear out outdated project files, finalize current sprints, and prepare your deck for April."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational impulse. High initiative to launch clean tasks, test original ideas, and operate with maximum autonomy."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Acute environmental perception. Pay close attention to underlying conditions, audit project parameters, and avoid reactive arguments."],
+    ["Day 3 - Expression meets Year 6 Grid", "Accelerated logical synthesis. Excellent state for rapid coding, structuring logical frameworks, and direct technical communication."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Structural discipline day. Focus on slow, methodical task execution, routine maintenance, and fortifying core setups."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Fast-moving, variable focus. Adapt quickly to incoming shifts; handle multi-threaded tasks with high efficiency."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Consolidation and workflow check. Optimize daily habits, eliminate friction points in your setup, and balance execution drive."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu strategic focus. Turn inward for deep problem-solving, architectural planning, and complex logical analysis."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High energy push before month-end. Force progress on stalled tasks and lock down key operational achievements."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Month-end system wipe. Finalize ongoing projects, clean temporary directories, and baseline your environment for April."]
+  ],
+  // APRIL
+  [
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu frequency active right at the month start. Deep, uninterrupted focus window. Isolate from social/external noise to solve complex logic puzzles or deep architectural debt."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "Sun and Mars energy combine for high operational authority. Push hard on primary goals; clear major task blocks with direct force."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "High Mars velocity. Strong urge to eliminate redundant routines, cancel non-essential commitments, and reset workspace efficiency."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh mini-cycle start. Autonomous execution mode. Deploy new tools or launch independent initiatives built during the previous cycle."],
+    ["Day 2 - Mirror meets Year 6 Grid", "High psychological awareness. Read between the lines in technical or personal communications. Observe system flaws silently before making changes."],
+    ["Day 3 - Expression meets Year 6 Grid", "High-speed verbal and conceptual clarity. Ideal for drafting documentation, writing rapid code, or cutting through ambiguous instructions."],
+    ["Day 4 - Anchor meets Year 6 Grid", "System resistance block. Expect slow execution pipelines, admin hurdles, or frustrating delays. Stay disciplined; focus on backend stability."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Restless, dynamic energy. High flexibility required to adapt to sudden changes in project scope or routine adjustments."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Operational reset. Streamline workspace setup, resolve minor environment friction, and realign execution tactics with long-term goals."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Intense strategic clarity under Ketu influence. High capacity for deep research, silent execution, and complex system design."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High-velocity execution window. High physical and mental endurance to crush heavy workloads and command project direction."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Aggressive cleanup phase. Wrap up open code sprints, drop dead-end ideas, and streamline your operational queue."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Independent drive takes over. Take full ownership of new tasks; proceed with zero reliance on external validation."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuitive analytical state. Focus on code review, security audits, and identifying subtle logic flaws or user errors."],
+    ["Day 3 - Expression meets Year 6 Grid", "Incisive, blunt communication. Strip away fluff; communicate complex requirements directly and build out rapid prototypes."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Heavy operational grind day. Build infrastructure, clean up databases, and fortify underlying systems against future failure."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High agility state. Test alternative tools, pivot execution strategies, and tackle dynamic tasks requiring quick reflexes."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Structural balancing. Focus on health, environment optimization, and maintaining sustainable velocity across all active builds."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Peak analytical isolation. Block out external chatter to resolve lingering technical bottlenecks or conduct high-level strategic planning."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational momentum. Assert command over complex deliverables and secure measurable progress across key targets."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency reset. Clear out outdated project files, finalize current sprints, and prepare your deck for May."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational impulse. High initiative to launch clean tasks, test original ideas, and operate with maximum autonomy."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Acute environmental perception. Pay close attention to underlying conditions, audit project parameters, and avoid reactive arguments."],
+    ["Day 3 - Expression meets Year 6 Grid", "Accelerated logical synthesis. Excellent state for rapid coding, structuring logical frameworks, and direct technical communication."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Structural discipline day. Focus on slow, methodical task execution, routine maintenance, and fortifying core setups."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Fast-moving, variable focus. Adapt quickly to incoming shifts; handle multi-threaded tasks with high efficiency."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Consolidation and workflow check. Optimize daily habits, eliminate friction points in your setup, and balance execution drive."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu strategic focus. Turn inward for deep problem-solving, architectural planning, and complex logical analysis."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High energy push before month-end. Force progress on stalled tasks and lock down key operational achievements."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Month-end system wipe. Finalize ongoing projects, clean temporary directories, and baseline your environment for May."]
+  ],
+  // MAY
+  [
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational authority to open the month. Sun and Mars energy drive rapid execution on high-priority infrastructure and core targets."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "High Mars velocity. Strong impulse to purge redundant code, terminate inefficient workflows, and clean out technical clutter."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Mini-cycle start. Autonomous drive kicks in hard. Launch new independent builds or deploy fresh system features without waiting for consensus."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuition turns highly analytical. Easily spot system vulnerabilities, bad logic, or underlying motives. Audit and observe silently."],
+    ["Day 3 - Expression meets Year 6 Grid", "High conceptual and verbal speed. Excellent window for writing documentation, rapid prototyping, and executing direct logical arguments."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Structural friction block. Expect slow execution pipelines or administrative delays. Focus on backend stability, routine tests, and bug cleanup."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Restless, dynamic operational energy. High flexibility required to handle sudden scope shifts, adjust daily routines, or test new frameworks."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Systems alignment day. Streamline your physical and digital workspace, fix minor environment issues, and stabilize build pipelines."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu activation peak. Uninterrupted, isolated execution window. Turn off external noise and tackle complex architectural problems."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High stamina and execution velocity. Assert full control over project roadmaps and force progress through existing roadblocks."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Aggressive cleanup phase. Wrap up open code sprints, abandon dead paths, and streamline your operational queue for maximum speed."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Independent execution mode. Take ownership of fresh tasks with zero reliance on external validation or slow inputs."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Receptive, hyper-observant state. Focus on security audits, code reviews, and evaluating background variables before acting."],
+    ["Day 3 - Expression meets Year 6 Grid", "Incisive, direct logical flow. Strip away filler text, outline strict requirements, and write lean, clean code logic."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Slow, methodical grind. Build infrastructure, clean databases, and fortify underlying project setups against future errors."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Rapid agility window. Test alternative deployment tools, pivot tactical directions, and manage multi-threaded tasks efficiently."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Structural balance check. Realign daily habits, resolve workspace friction, and ensure long-term execution sustainability."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Peak analytical solitude under Ketu. Isolate to solve deep algorithmic bottlenecks or map out long-range technical plans."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational momentum. Command key project deliverables and secure measurable milestone victories."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency reset. Clear out deprecated files, finalize ongoing task blocks, and reset your workspace."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational surge. High drive to start targeted, high-impact tasks with maximum speed and independence."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Sharp environmental awareness. Pay attention to underlying parameters, audit system configurations, and keep emotional reactions locked down."],
+    ["Day 3 - Expression meets Year 6 Grid", "Accelerated logical synthesis. Ideas convert instantly into structured execution, specs, or rapid prototype builds."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Structural discipline day. Focus on methodical execution, administrative maintenance, and hardening system dependencies."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Fast-moving, variable focus. Adapt quickly to incoming operational shifts and maintain agility across all active files."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Workflow consolidation. Optimize daily routines, remove drag from your environment, and balance execution output."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Strategic internal focus. Deep analytical problem-solving, architectural design, and silent technical execution."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High-velocity push toward month-end goals. Drive stalled initiatives over the line with direct focus."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "System wipe phase. Finalize active sprints, purge temporary directories, and clear your queue completely."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Early cycle launch. Start groundwork for upcoming June targets with full autonomy and sharp drive."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Month-end observation state. Audit current baseline metrics, verify system stability, and evaluate next month's starting position."]
+  ],
+  // JUNE
+  [
+    ["Day 3 - Expression meets Year 6 Grid", "High logical processing speed to open the month. Excellent window for writing documentation, drafting technical specs, and rapid prototyping."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Structural friction block. Expect administrative delays or slow build processes. Focus strictly on system hardening, database cleanup, and backend maintenance."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High agility operational state. Be ready to adjust project scopes, shift tactical directions, or test alternative frameworks on short notice."],
+    ["Day 6 - Harmony meets Year 6 Grid", "System stabilization day. Optimize workspace layout, clean up local repositories, and streamline daily build routines for sustainable speed."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu peak activation. Turn off external channels; focus entirely on complex algorithmic problems, deep architecture, or quiet research."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational drive. Sun and Mars demand measurable output. Push high-priority deliverables through roadblocks with direct force."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency reset. Strong drive to purge dead-end features, delete temporary code, and clear out stale tasks from your queue."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Mini-cycle start. Autonomous execution mode. Deploy fresh tools, launch independent sprints, and take full control of new builds."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuition turns analytical. Read beneath surface statements, spot subtle logic errors or security flaws, and observe without jumping to immediate conclusions."],
+    ["Day 3 - Expression meets Year 6 Grid", "Accelerated mental speed. Zero tolerance for slow logic or redundant discussions. Strip away fluff and outline direct, actionable requirements."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Heavy structural resistance. Focus on baseline maintenance, running unit tests, and establishing reliable system bounds rather than forcing fast progress."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Restless operational drive. Tackle dynamic, multi-threaded tasks and experiment with quick, low-risk optimization fixes."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Realigning operational rhythm. Resolve environment friction, clean up active directory structures, and balance execution velocity with physical recovery."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "High strategic clarity under Ketu influence. Isolate yourself to evaluate backend design, write complex algorithms, and refine long-term roadmaps."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High stamina and execution authority. Drive critical deliverables across the line and lock down key operational wins."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Aggressive cleanup window. Wrap up active sprint blocks, eliminate non-functional ideas, and reset your workspace baseline."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Independent drive takes over. Take full charge of new technical challenges with high confidence and zero reliance on external guidance."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Deep observational state. Audit code integrity, evaluate system configurations, and assess subtle operational variables."],
+    ["Day 3 - Expression meets Year 6 Grid", "Incisive, direct communication style. Highly efficient for rapid prototyping, structuring clean logic, and cutting through ambiguous tasks."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Slow, methodical grind day. Fortify underlying project structures, refine configuration files, and eliminate technical debt."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Fast-moving tactical environment. Adapt rapidly to incoming operational shifts; keep tasks short, modular, and flexible."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Structural baseline check. Optimize daily habits, remove drag from your local setup, and maintain consistent execution flow."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Internal strategic focus under Ketu. High focus state for silent problem solving, logical analysis, and system architecture optimization."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "Strong operational momentum. Command key project milestones and enforce direct execution on remaining June goals."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars reset frequency. Clear out outdated dependencies, finalize open tickets, and reset your board for the final stretch of June."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational impulse. Start new, targeted micro-projects with full autonomy and high velocity."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Hyper-perceptive analytical state. Evaluate environmental patterns, verify pipeline health, and refrain from reactive moves."],
+    ["Day 3 - Expression meets Year 6 Grid", "Fast logical synthesis. Thoughts convert quickly into clean structure, documentation, or code."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Methodical lockdown day. Perform system backups, run integration tests, and finalize structural checks."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Month-end pivot day. Clear residual light tasks, maintain high adaptability, and prepare your workspace setup for July."]
+  ],
+  // JULY
+  [
+    ["Day 4 - Anchor meets Year 6 Grid", "Structural baseline setup for July. Expect slow administrative pipelines or heavy dependencies. Focus entirely on system stability, database maintenance, and fortifying core configurations."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Dynamic operational flux. High flexibility required to adapt to sudden changes in project scope, environmental conditions, or tactical routines."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Maximum system alignment. Optimize workspace setup, clear minor operational drag, and streamline execution pipelines for sustained performance."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Ketu frequency active. Highly isolated, analytical deep-work state. Shut out external noise to solve complex logical problems or execute deep architecture design."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High energy surge. Sun and Mars drivers demand measurable output. Push high-priority deliverables through existing roadblocks with direct force."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Mars frequency reset. Strong impulse to delete obsolete scripts, abandon non-functional paths, and clear out technical debt cleanly."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh mini-cycle start. Autonomous execution mode. Deploy new tools or launch independent sprints without waiting for external inputs."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Intuition turns analytical. High situational awareness to spot system vulnerabilities or read underlying motives. Observe silently and track data."],
+    ["Day 3 - Expression meets Year 6 Grid", "Rapid logical processing. Excellent window for drafting documentation, writing clean code logic, or cutting through ambiguous instructions directly."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Heavy structural resistance block. System updates, compile lags, or admin bottlenecks. Treat today as an automated testing and code audit run."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Restless execution drive. Avoid repetitive long-form tasks; focus on quick bug fixes, tactical shifts, or testing alternative frameworks."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Workflow reset. Re-align execution tactics, balance physical baseline health, and remove friction points from your active environment."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Deep Ketu strategic focus. Brain craves technical complexity and solitude. Tackle backend logic, algorithmic puzzles, or system designs quietly."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "Strategic leverage day. High mental and physical stamina available to force key milestones over the finish line."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "Aggressive cleanup phase. Wrap up open code sprints, drop dead-end ideas, and clear your active operational queue."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Independent drive takes over. Take full ownership of new tasks with high confidence and zero reliance on external validation."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Receptive, hyper-observant state. Focus on system diagnostics, evaluating code integrity, and checking underlying parameters."],
+    ["Day 3 - Expression meets Year 6 Grid", "Sharp, blunt, and highly efficient communication. Zero tolerance for slow logic or redundant arguments. Strip away fluff instantly."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Slow operational grind day. Build infrastructure, clean up repositories, and fortify underlying project setups against future errors."],
+    ["Day 5 - Pivot meets Year 6 Grid", "High operational agility. Adapt rapidly to incoming operational shifts; manage multi-threaded tasks with quick adjustments."],
+    ["Day 6 - Harmony meets Year 6 Grid", "Structural balance check. Optimize daily routines, clean your working directory, and ensure execution sustainability across active projects."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Peak analytical solitude under Ketu. Block out external chatter to resolve complex technical bottlenecks or long-term roadmap designs."],
+    ["Day 8 - Power/Execution meets Year 6 Grid", "High operational authority. Mars and Sun forces combine for maximum output. Lock down major deliverables."],
+    ["Day 9 - Completion/Reset meets Year 6 Grid", "System reset phase. Discard inefficient methods, finalize active sprint tasks, and reset your workspace."],
+    ["Day 1 - Catalyst meets Year 6 Grid", "Fresh operational surge. Launch targeted micro-tasks with complete autonomy and high execution velocity."],
+    ["Day 2 - Mirror meets Year 6 Grid", "Acute environmental perception. Evaluate background metrics, check system configurations, and refrain from reactive moves."],
+    ["Day 3 - Expression meets Year 6 Grid", "Accelerated logical synthesis. Ideas convert rapidly into structured documentation, specs, or clean code logic."],
+    ["Day 4 - Anchor meets Year 6 Grid", "Methodical lockdown day. Perform integration tests, clear residual technical debt, and finalize structural baseline checks."],
+    ["Day 5 - Pivot meets Year 6 Grid", "Dynamic tactical environment. Keep tasks modular and flexible while adjusting to short-term priorities."],
+    ["Day 6 - Harmony meets Year 6 Grid", "System stabilization window. Clean workspace setups, align long-term goals, and ensure smooth operational flow."],
+    ["Day 7 - Deep Dive meets Year 6 Grid", "Month-end strategic focus under Ketu. Turn inward for deep problem solving, code review, and setting baseline configurations for August."]
+  ],
+  // AUGUST
+  [
+    ["Day 1 - Catalyst meets Mars Fire", "Explosive operational start. Sun 1 and Mars Fire stack directly, creating massive autonomous drive. Do not wait for permissions; launch primary targets instantly."],
+    ["Day 2 - Mirror meets Mars Fire", "Aggressive intuition. You will spot hidden motives and structural flaws instantly, leading to high irritation. Channel the temper into ruthless, silent debugging rather than verbal conflict."],
+    ["Day 3 - Expression meets Mars Fire", "High-frequency combustive logic. Your verbal and processing speed drops all unnecessary filler. Excellent for compiling files or delivering blunt, zero-tolerance technical specs."],
+    ["Day 4 - Anchor meets Mars Fire", "Intense structural resistance. The aggressive action of the month collides with grinding system delays. Treat this as a forced automation run—document the errors and optimize the backend without forcing the frontend."],
+    ["Day 5 - Pivot meets Mars Fire", "Volatile trajectory changes. Sudden, fast-paced adjustments to your daily deployment. Do not force repetitive tasks; use the high velocity to experiment with completely new coding logic."],
+    ["Day 6 - Harmony meets Mars Fire", "Friction in the system routines. The urge to move fast clashes with the need to stabilize. Focus on aggressively cleaning up your workspace and eliminating operational drag."],
+    ["Day 7 - Deep Dive meets Mars Fire", "Ketu's isolation gets supercharged by Mars. Highly intensive, almost obsessive technical focus. Isolate yourself completely to burn through complex architectural problems."],
+    ["Day 8 - Power/Execution meets Mars Fire", "Absolute peak operational authority. Execute major deliverables with relentless force. You have the stamina to bulldoze through the heaviest administrative or technical roadblocks today."],
+    ["Day 9 - Completion/Reset meets Mars Fire", "Combustive purge phase. Zero patience for legacy systems or dead-end ideas. Cut away redundant code and inefficient tools with immediate, clinical precision."],
+    ["Day 1 - Catalyst meets Mars Fire", "Second surge of independent velocity. Initiate fresh micro-projects. Your Sun 1 drive demands rapid prototyping without waiting for team consensus."],
+    ["Day 2 - Mirror meets Mars Fire", "Sharp tactical awareness tinged with impatience. You will easily read underlying environmental flaws. Do not escalate; use the data to silently outmaneuver the bottlenecks."],
+    ["Day 3 - Expression meets Mars Fire", "Razor-sharp conceptual synthesis. Ideas translate into actionable code at breakneck speed. Strip away complex arguments and write direct, highly efficient scripts."],
+    ["Day 4 - Anchor meets Mars Fire", "Heavy friction day. Mars wants speed, but the Day 4 grid demands slow, methodical checks. Channel the frustration into hardening your database and running strict security audits."],
+    ["Day 5 - Pivot meets Mars Fire", "Hyper-agile execution mode. Shift tactics rapidly as new variables emerge. Ideal for rapid bug squashing and deploying hotfixes on the fly."],
+    ["Day 6 - Harmony meets Mars Fire", "Forcing structural alignment. Use the high energy to forcefully organize your active directories and enforce strict operational boundaries to protect your focus."],
+    ["Day 7 - Deep Dive meets Mars Fire", "Aggressive internal focus. Ketu demands deep research while Mars demands action. Result: writing heavy, complex backend architecture at maximum speed. Shut out all noise."],
+    ["Day 8 - Power/Execution meets Mars Fire", "Command and conquer energy. Take complete ownership of the most difficult project on your board and force it across the finish line."],
+    ["Day 9 - Completion/Reset meets Mars Fire", "High-speed system wipe. Ruthlessly close open loops, finalize active sprints, and delete temporary files. Leave zero technical debt behind."],
+    ["Day 1 - Catalyst meets Mars Fire", "Autonomous reboot. Start the final third of the month with a sharp, independent push. Excellent window for launching new server instances or initiating fresh codebases."],
+    ["Day 2 - Mirror meets Mars Fire", "Highly perceptive, highly reactive state. You will notice every inefficiency. Keep your Sun 1 ego in check; optimize the systems quietly rather than criticizing the setup."],
+    ["Day 3 - Expression meets Mars Fire", "Accelerated data processing. Your logic is blunt and highly effective. Perfect for writing clear technical documentation or giving fast, unvarnished feedback."],
+    ["Day 4 - Anchor meets Mars Fire", "Gridlock and maintenance. The aggressive Mars drive will feel trapped by administrative tasks. Use the heat to aggressively reinforce core infrastructure and patch vulnerabilities."],
+    ["Day 5 - Pivot meets Mars Fire", "Dynamic problem-solving. Navigate fast-moving operational shifts. Keep your code modular and your tactics highly adaptable to sudden changes."],
+    ["Day 6 - Harmony meets Mars Fire", "Active workflow optimization. Don't just tidy up; aggressively re-engineer your workspace and daily routines for maximum execution speed."],
+    ["Day 7 - Deep Dive meets Mars Fire", "Intense solitary execution. Ketu's depth meets Mars' stamina. Lock in on algorithmic puzzles or deep logic mapping and do not break focus until solved."],
+    ["Day 8 - Power/Execution meets Mars Fire", "Strategic dominance. High leverage day to push critical tasks to completion. Your mental endurance is at peak capacity for heavy lifting."],
+    ["Day 9 - Completion/Reset meets Mars Fire", "Final aggressive purge of the month. Clear the active queue, abandon failing methods, and reset your operational baseline completely."],
+    ["Day 1 - Catalyst meets Mars Fire", "Early momentum for September. Start laying the groundwork for next month's targets with sharp, independent execution."],
+    ["Day 2 - Mirror meets Mars Fire", "Tactical observation. Evaluate the month's metrics, spot the weak links in your architecture, and prepare your countermeasures silently."],
+    ["Day 3 - Expression meets Mars Fire", "Rapid-fire structural planning. Convert observations into strict, direct deployment plans."],
+    ["Day 4 - Anchor meets Mars Fire", "Month-end lockdown. Force the final system checks, finalize backups, and aggressively stabilize the grid before the calendar turns."]
+  ],
+  // SEPTEMBER
+  [
+    ["Day 5 - Pivot meets Integration Grid", "Dynamic opening. High flexibility is required to connect varying project components. Maneuver quickly through unexpected configuration clashes."],
+    ["Day 6 - Harmony meets Integration Grid", "Double structural alignment. Prime window to document your tech stack, enforce clean code protocols, and balance the operational load across your systems."],
+    ["Day 7 - Deep Dive meets Integration Grid", "Intense Ketu isolation. Block external input and dive into complex backend logic. Focus purely on how disparate data structures communicate with each other."],
+    ["Day 8 - Power/Execution meets Integration Grid", "High-leverage execution. Drive stalled system merges to completion. Your Sun/Mars stamina allows you to brute-force through heavy administrative delays."],
+    ["Day 9 - Completion/Reset meets Integration Grid", "Total purge of legacy code. If a system dependency isn't integrating smoothly, sever it. Ruthlessly eliminate technical debt."],
+    ["Day 1 - Catalyst meets Integration Grid", "Autonomous architecture push. Launch a new isolated server instance or project branch. Rely entirely on your own willpower to set the baseline."],
+    ["Day 2 - Mirror meets Integration Grid", "Receptive systems check. Intuition maps directly to identifying silent bugs or network vulnerabilities. Observe the data flow without making immediate, aggressive changes."],
+    ["Day 3 - Expression meets Integration Grid", "High-velocity logical processing. Ideal for writing strict API documentation, compiling clean code, and cutting through ambiguous team communications."],
+    ["Day 4 - Anchor meets Integration Grid", "Structural friction point. Expect latency or stubborn build errors. Do not escalate to frustration; treat this as an automated maintenance run to harden the database."],
+    ["Day 5 - Pivot meets Integration Grid", "Highly agile problem-solving. Navigate fast-moving scope changes. Keep your code modular to adjust to incoming operational demands on the fly."],
+    ["Day 6 - Harmony meets Integration Grid", "Workflow consolidation. Standardize your daily deployment routines. Remove environmental distractions to maintain a sustainable execution speed."],
+    ["Day 7 - Deep Dive meets Integration Grid", "Deep architectural strategy. Ketu demands quiet focus. Map out the long-term roadmap for the major transition coming next month."],
+    ["Day 8 - Power/Execution meets Integration Grid", "Command authority peaks. Take control of the most complex integration task on your board and enforce measurable progress."],
+    ["Day 9 - Completion/Reset meets Integration Grid", "Aggressive cycle close. Abandon failing methods and finalize open pull requests. Clear the operational queue entirely."],
+    ["Day 1 - Catalyst meets Integration Grid", "Fresh operational impulse. Start targeted micro-tasks with sharp, independent execution and zero reliance on external consensus."],
+    ["Day 2 - Mirror meets Integration Grid", "Tactical environmental awareness. Audit underlying project parameters. Keep your Mars 9 temper checked if you spot user errors—fix the system silently."],
+    ["Day 3 - Expression meets Integration Grid", "Accelerated synthesis. Complex ideas translate into actionable specs instantly. Use this bandwidth to rapidly prototype new logic structures."],
+    ["Day 4 - Anchor meets Integration Grid", "Methodical lockdown. Force strict integration tests, verify system backups, and clean up local repositories. Progress will be slow but highly stable."],
+    ["Day 5 - Pivot meets Integration Grid", "Volatile trajectory shifts. Deploy hotfixes and manage multi-threaded tasks. Your mental agility will easily outpace any sudden project roadblocks."],
+    ["Day 6 - Harmony meets Integration Grid", "Systems alignment check. Re-engineer your workspace setup for maximum efficiency and resolve minor environment friction."],
+    ["Day 7 - Deep Dive meets Integration Grid", "Strategic internal focus. Uninterrupted execution window. Solve deep algorithmic bottlenecks while completely isolated from network noise."],
+    ["Day 8 - Power/Execution meets Integration Grid", "High-velocity push. Lock down key operational wins. Sun and Mars drive relentless momentum across primary targets."],
+    ["Day 9 - Completion/Reset meets Integration Grid", "Clean system wipe. Purge temporary directories, conclude active sprints, and reset your digital workspace."],
+    ["Day 1 - Catalyst meets Integration Grid", "Early groundwork for the October shift. Take immediate, independent action on setting up new structural baselines."],
+    ["Day 2 - Mirror meets Integration Grid", "Hyper-perceptive state. Pay close attention to underlying conditions in your code or network. Avoid reactive moves; gather analytical data."],
+    ["Day 3 - Expression meets Integration Grid", "Fast logical output. Strip away fluff in your code and communications. Write lean, efficient scripts that execute without hesitation."],
+    ["Day 4 - Anchor meets Integration Grid", "Heavy structural discipline. Focus entirely on backend maintenance, establishing reliable bounds, and clearing lingering technical debt."],
+    ["Day 5 - Pivot meets Integration Grid", "Rapid adaptability. Good window for tactical pivots, testing fresh ideas in a low-risk environment, and resolving minor bugs."],
+    ["Day 6 - Harmony meets Integration Grid", "Final monthly system stabilization. Ensure execution sustainability, balance your physical baseline, and optimize deployment structures."],
+    ["Day 7 - Deep Dive meets Integration Grid", "Pre-shift strategic isolation. Ketu pulls you deeply inward. Finalize the deep architecture mapping required before the massive Personal Year shift in October."]
+  ],
+  // OCTOBER
+  [
+    ["Day 8 - Power/Execution meets Pre-Shift Grid", "High-leverage start to the month. Drive your remaining Year 6 administrative tasks to completion. Sun and Mars stamina allow you to brute-force through legacy roadblocks before the transition."],
+    ["Day 9 - Completion/Reset meets Pre-Shift Grid", "Aggressive system purge. Eliminate any inefficient workflows or obsolete scripts today. You cannot carry technical debt into the upcoming Year 7 cycle."],
+    ["Day 1 - Catalyst meets Pre-Shift Grid", "Autonomous baseline push. Launch targeted micro-projects with absolute independence. Do not wait for external validation; execute your primary architecture instantly."],
+    ["Day 2 - Mirror meets Pre-Shift Grid", "Tactical data gathering. Your intuition zeroes in on subtle system flaws and network vulnerabilities. Observe the data silently and map out hotfixes without reacting emotionally."],
+    ["Day 3 - Expression meets Pre-Shift Grid", "High-velocity logic conversion. Complex ideas translate into direct, actionable code. Strip away all communication filler and write strictly optimized technical specs."],
+    ["Day 4 - Anchor meets Pre-Shift Grid", "Heavy structural lockdown. Expect administrative latency. Treat this as an automated maintenance window to run strict security audits and backup your databases."],
+    ["Day 5 - Pivot meets Pre-Shift Grid", "Dynamic operational agility. Navigate sudden scope shifts effortlessly. Keep your code modular so you can pivot your deployment tactics on the fly."],
+    ["Day 6 - Harmony meets Pre-Shift Grid", "Final major optimization of your current workspace. Enforce clean code protocols and balance your physical baseline before the upcoming intense technical deep-dive."],
+    ["Day 7 - Deep Dive meets Pre-Shift Grid", "Pre-shift isolation window. Ketu demands quiet focus. Map out the complex backend logic you will need to execute after the mid-month transition."],
+    ["Day 8 - Power/Execution meets Pre-Shift Grid", "Command authority peaks. Take control of the heaviest integration task on your board. Enforce measurable, undeniable progress."],
+    ["Day 9 - Completion/Reset meets Pre-Shift Grid", "Ruthless cycle close. Abandon failing frameworks and finalize open pull requests. Clear your active queue entirely to prepare for the shift."],
+    ["Day 1 - Catalyst meets Pre-Shift Grid", "Early groundwork for the new era. Take immediate, independent action on setting up fresh structural baselines for your upcoming projects."],
+    ["Day 2 - Mirror meets Pre-Shift Grid", "Hyper-perceptive environmental check. Audit underlying project dependencies. Keep your Mars temper checked if you spot user errors; just patch the system."],
+    ["Day 3 - Expression meets Pre-Shift Grid", "Accelerated synthesis. Use this sharp mental bandwidth to rapidly prototype new logic structures that will sustain you through the transition."],
+    ["Day 4 - Anchor meets Pre-Shift Grid", "Methodical resistance. Force strict integration tests and clear lingering technical debt. Progress will feel slow but it is establishing an unbreakable foundation."],
+    ["Day 5 - Pivot meets Pre-Shift Grid", "Volatile trajectory shifts. Deploy necessary hotfixes. Your mental agility will easily outpace any last-minute project roadblocks."],
+    ["Day 6 - Harmony meets Pre-Shift Grid", "Final system stabilization. Ensure execution sustainability and optimize your deployment structures one last time under the Year 6 grid."],
+    ["Day 7 - Deep Dive meets Pre-Shift Grid", "The eve of the transition. Ketu pulls you deeply inward. Finalize the deep architecture mapping required for tomorrow's massive frequency change."],
+    ["Day 8 - DESTINY SHIFT DAY - Personal Year → 7", "MAJOR MILESTONE. Super-charged energy hits. Peak willpower meets unmatched execution. Sun (1) hands off control mid-month. Ketu (7) takes over as your dominant frequency going forward. You do not ease into today; you force it. Net result: deeper focus, less noise, and Mars (9) executes the transition hard."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Immediate post-shift purge. The new Ketu baseline demands absolute silence and focus. Terminate any remaining noisy commitments or messy code loops instantly."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Autonomous deep-tech launch. Initiate your first major project under the Year 7 frequency. Execute with ruthless independence and zero external input."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Analytical hyper-awareness. Intuition is amplified by Ketu's depth. You will spot hidden structural motives and backend flaws with clinical precision. Track them silently."],
+    ["Day 3 - Expression meets Year 7 Grid", "Incisive logical output. Your communication drops all pretense. Write lean, brutal, highly efficient scripts that execute exactly as commanded."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Grinding architectural lockdown. The system demands slow, methodical coding. Fortify your new servers, establish strict bounds, and ignore the urge to rush."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Tactical backend shifts. Test new frameworks in a low-risk environment. Your agility allows you to resolve complex bugs without breaking your isolated focus."],
+    ["Day 6 - Harmony meets Year 7 Grid", "Aligning the new normal. Standardize your daily deployment routines within the Year 7 frequency. Remove environmental distractions completely."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Double Ketu alignment. Maximum analytical isolation. Block out the world entirely. You are capable of solving the most complex algorithmic bottlenecks on your board today."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "High-velocity silent execution. Drive stalled system architectures to completion. Your stamina allows you to brute-force through heavy technical layers."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Aggressive system wipe. Purge temporary directories, conclude active sprints, and clean your digital workspace."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Fresh operational impulse. Start targeted micro-tasks with sharp, isolated execution. You are the sole architect today."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Month-end analytical state. Pay close attention to network conditions and code integrity. Gather data and baseline your environment for November without reactive interference."]
+  ],
+  // NOVEMBER
+  [
+    ["Day 3 - Expression meets Year 7 Grid", "Highly isolated logical processing. Your communication bandwidth is narrow but extremely sharp. Perfect window for writing complex technical documentation or mapping out strict algorithmic logic."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Heavy architectural grind. Expect system friction. Do not force front-end progress; use Ketu's depth and Mars' stamina to harden your database and patch deep backend vulnerabilities."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Tactical agility within isolation. Sudden variables require you to pivot your code structure. Keep your scripts modular to absorb the changes without breaking your flow state."],
+    ["Day 6 - Harmony meets Year 7 Grid", "System stabilization day. Enforce strict boundaries around your workspace. Optimize your local repositories and eliminate any environmental noise that threatens your focus."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Double Ketu alignment. Maximum technical isolation. Shut off all network communications. You have the raw bandwidth today to untangle the most complex structural logic on your board."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "High-leverage silent execution. Sun 1 authority meets Ketu 7 depth. Drive heavy, stalled backend projects to completion with ruthless, quiet force."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Aggressive system purge. Mars demands velocity. Cut away redundant architectures, terminate dead-end code branches, and completely clear your operational queue."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Autonomous baseline push. Launch a fresh, highly complex tech initiative. Rely entirely on your own willpower and execute with zero external dependency."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Deep analytical hyper-awareness. Your intuition acts like a network sniffer, easily identifying hidden structural flaws or subtle logic errors. Gather data silently; do not react."],
+    ["Day 3 - Expression meets Year 7 Grid", "Accelerated logical synthesis. Complex architectural ideas convert instantly into actionable specs. Strip away all fluff and write brutal, highly optimized code."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Methodical lockdown phase. Force strict integration tests and verify core system backups. Progress will feel slow, but you are establishing an unbreakable foundation."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Fast-moving technical troubleshooting. Deploy isolated hotfixes. Your mental agility easily outpaces unexpected bugs, but maintain your Ketu-driven silence while you work."],
+    ["Day 6 - Harmony meets Year 7 Grid", "Consolidating the new normal. Standardize your isolated deployment routines. Ensure your daily habits support the immense mental energy required by the Year 7 grid."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Peak strategic isolation. Dive into deep system mapping. This is the time to build the invisible frameworks that will dictate your execution for the rest of the year."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "Command and conquer energy, deployed internally. Force major, complex deliverables across the line. Your stamina for heavy lifting is at peak capacity today."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "High-speed digital wipe. Ruthlessly close open loops. Delete temporary files, finalize active backend sprints, and leave zero technical debt behind."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Early momentum surge. Start laying the groundwork for a new server instance or project branch. Sun 1 demands you take the lead independently."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Tactical environmental check. Audit underlying project dependencies. If you spot inefficiencies, keep your Mars temper locked down and patch the system quietly."],
+    ["Day 3 - Expression meets Year 7 Grid", "Razor-sharp conceptual synthesis. Ideas translate into actionable code at breakneck speed. Write direct, zero-tolerance technical specifications."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Structural gridlock. The system demands slow, methodical coding. Fortify your core dependencies and ignore the Mars urge to rush the process."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Dynamic problem-solving. Navigate fast-moving scope shifts effortlessly. Test new backend frameworks in a tightly controlled, low-risk environment."],
+    ["Day 6 - Harmony meets Year 7 Grid", "Active workflow optimization. Aggressively re-engineer your digital workspace to support deep-dive coding sessions."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Intense solitary execution. Lock in on heavy algorithmic puzzles. Do not break your focus until the logic compiles perfectly."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "Strategic dominance. High-leverage day to push critical backend tasks to completion. Your mental endurance is unmatched today."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Combustive purge phase. Zero patience for legacy systems. Cut away inefficient tools with immediate, clinical precision."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Autonomous reboot. Initiate fresh micro-projects. Your drive demands rapid prototyping without waiting for input from anyone else."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Highly perceptive, highly reactive state. You will notice every inefficiency in the code. Optimize the systems quietly rather than criticizing the setup."],
+    ["Day 3 - Expression meets Year 7 Grid", "Accelerated data processing. Your logic is blunt and highly effective. Perfect for giving fast, unvarnished feedback or writing clear documentation."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Month-end lockdown. Force the final system checks, finalize databases, and aggressively stabilize the grid before December begins."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Dynamic tactical environment. Keep tasks modular and flexible while adjusting to incoming priorities for the final month of the year."]
+  ],
+  // DECEMBER
+  [
+    ["Day 6 - Harmony meets Year 7 Grid", "System consolidation. Enforce strict operational boundaries around your deployment pipelines. Balance the heavy mental load of the Year 7 grid by optimizing your local working environment for complete efficiency."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Double Ketu alignment. Maximum technical isolation. Shut off all network communications and incoming requests. You have the raw bandwidth today to untangle the most complex structural logic on your board without interference."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "High-leverage silent execution. Sun 1 authority meets Ketu 7 depth. Drive heavy, stalled backend projects to completion with ruthless, quiet force."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Aggressive system purge. Mars demands velocity. Cut away redundant architectures, terminate dead-end code branches, and completely clear your operational queue before the mid-month push."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Autonomous baseline push. Launch a fresh, highly complex tech initiative. Rely entirely on your own willpower and execute with zero external dependency or approval."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Deep analytical hyper-awareness. Your intuition acts like a network sniffer, easily identifying hidden structural flaws or subtle logic errors. Gather data silently; do not react emotionally."],
+    ["Day 3 - Expression meets Year 7 Grid", "Accelerated logical synthesis. Complex architectural ideas convert instantly into actionable specs. Strip away all fluff and write brutal, highly optimized, zero-latency code."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Methodical lockdown phase. Force strict integration tests and verify core system backups. Progress will feel slow, but you are establishing an unbreakable foundation for the end-of-year closeout."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Fast-moving technical troubleshooting. Deploy isolated hotfixes. Your mental agility easily outpaces unexpected bugs, but maintain your Ketu-driven silence while you work the terminal."],
+    ["Day 6 - Harmony meets Year 7 Grid", "Consolidating the new normal. Standardize your isolated deployment routines. Ensure your daily habits support the immense mental energy required by the final weeks of 2026."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Peak strategic isolation. Dive into deep system mapping. This is the time to build the invisible frameworks that will dictate your execution moving into 2027."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "Command and conquer energy, deployed internally. Force major, complex deliverables across the line. Your stamina for heavy lifting is at peak capacity today—use it on your hardest project."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "High-speed digital wipe. Ruthlessly close open loops. Delete temporary files, finalize active backend sprints, and leave zero technical debt behind as you cross the mid-month line."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Early momentum surge. Start laying the groundwork for a new server instance or project branch. Sun 1 demands you take the lead independently and establish your own parameters."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Tactical environmental check. Audit underlying project dependencies. If you spot inefficiencies, keep your Mars temper locked down and patch the system quietly from the backend."],
+    ["Day 3 - Expression meets Year 7 Grid", "Razor-sharp conceptual synthesis. Ideas translate into actionable code at breakneck speed. Write direct, zero-tolerance technical specifications and push them live."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Structural gridlock. The system demands slow, methodical coding. Fortify your core dependencies and ignore the Mars urge to rush the process; precision is mandatory today."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Dynamic problem-solving. Navigate fast-moving scope shifts effortlessly. Test new backend frameworks in a tightly controlled, low-risk environment to prepare for broader deployment."],
+    ["Day 6 - Harmony meets Year 7 Grid", "Active workflow optimization. Aggressively re-engineer your digital workspace to support deep-dive coding sessions over the final stretch of the year."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "Intense solitary execution. Lock in on heavy algorithmic puzzles. Do not break your focus until the logic compiles perfectly and the system runs seamlessly."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "Strategic dominance. High-leverage day to push critical backend tasks to completion. Your mental endurance is unmatched today; leverage it to finalize major yearly goals."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Combustive purge phase. Zero patience for legacy systems. Cut away inefficient tools with immediate, clinical precision to keep your stack light."],
+    ["Day 1 - Catalyst meets Year 7 Grid", "Autonomous reboot. Initiate fresh micro-projects. Your drive demands rapid prototyping without waiting for input from anyone else. Set the pace yourself."],
+    ["Day 2 - Mirror meets Year 7 Grid", "Highly perceptive, highly reactive state. You will notice every inefficiency in the code. Optimize the systems quietly rather than criticizing the setup or causing friction."],
+    ["Day 3 - Expression meets Year 7 Grid", "Accelerated data processing. Your logic is blunt and highly effective. Perfect for giving fast, unvarnished feedback or writing crystal-clear documentation for future reference."],
+    ["Day 4 - Anchor meets Year 7 Grid", "Final lockdown phase. Force the final system checks, finalize databases, and aggressively stabilize the grid. No new massive builds today—just impenetrable defense."],
+    ["Day 5 - Pivot meets Year 7 Grid", "Tactical adjustments. Handle late-breaking operational shifts with high agility. Keep your final commits small, modular, and easy to roll back if necessary."],
+    ["Day 6 - Harmony meets Year 7 Grid", "System alignment. Finalize the organization of your working directories, archive completed 2026 projects, and clear the operational slate."],
+    ["Day 7 - Deep Dive meets Year 7 Grid", "End-of-year architectural review. Ketu isolation peaks. Review your data, analyze the year's backend growth, and map out the overarching strategy for the coming twelve months."],
+    ["Day 8 - Power/Execution meets Year 7 Grid", "Final operational push. Use the remaining Sun and Mars energy to lock down any outstanding administrative or technical milestones before the calendar turns."],
+    ["Day 9 - Completion/Reset meets Year 7 Grid", "Absolute system wipe. Total closure of the 2026 timeline. Terminate all remaining obsolete files, conclude all Year 6 carryover tasks, and cleanly power down the grid to reset for 2027."]
+  ]
 ];
-
-function mergedLine(dayIdx, monthIdx, dayNum){
-  const [dt, dd] = dayVibes[dayIdx];
-  const m = months2026[monthIdx];
-  const tpl = TEMPLATES[(dayNum + monthIdx) % TEMPLATES.length];
-  return {dt, dd, mt:m.theme, md:m.themeDetail, text: tpl(dt, dd, m.theme, m.themeDetail)};
-}
 
 function dayOfWeek(monthIndex, day){
   const d = new Date(Date.UTC(2026, monthIndex, day));
@@ -402,6 +774,7 @@ function ordinal(n){
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 
+const dowLabels = ["S","M","T","W","T","F","S"];
 const monthsEl = document.getElementById('months');
 
 months2026.forEach((m, mi) => {
@@ -410,7 +783,7 @@ months2026.forEach((m, mi) => {
 
   const head = document.createElement('div');
   head.className = 'month-head';
-  head.innerHTML = `<div class="month-name">${m.name} 2026</div>` + (m.real ? `<div class="real-tag">Real Nakshatra sourced</div>` : '');
+  head.innerHTML = `<div class="month-name">${m.name} 2026</div>` + (m.real || m.specialReal ? `<div class="real-tag">Real Nakshatra sourced</div>` : '');
   card.appendChild(head);
 
   const themeEl = document.createElement('div');
@@ -437,7 +810,7 @@ months2026.forEach((m, mi) => {
   for(let d=1; d<=m.days; d++){
     const cell = document.createElement('div');
     const isSpecial = (m.name==="October" && d===19);
-    const hasReal = !!(m.real && m.real[d-1]);
+    const hasReal = !!(m.real && m.real[d-1]) || !!(m.specialReal && m.specialReal[d]);
     cell.className = 'day' + (isSpecial ? ' special' : '') + (hasReal ? ' hasreal' : '');
     cell.textContent = d;
     cell.addEventListener('click', () => openPanel(mi, d));
@@ -450,26 +823,52 @@ months2026.forEach((m, mi) => {
 
 function openPanel(mi, d){
   const m = months2026[mi];
-  const dayIdx = (d-1) % 31;
-  const merged = mergedLine(dayIdx, mi, d);
+  
+  // Fetch hardcoded unique synthesis
+  const uniqueData = dailyData[mi][d-1];
+  const titleStr = uniqueData[0];
+  const textStr = uniqueData[1];
+
   document.getElementById('p-date').textContent = `${m.name} ${ordinal(d)}, 2026`;
-  document.getElementById('p-title').textContent = (m.name==="October" && d===19)
-    ? "Destiny Shift Day — Personal Year → 7"
-    : `Day ${dayIdx+1}: ${merged.dt} meets ${merged.mt}`;
+  document.getElementById('p-title').textContent = titleStr;
   document.getElementById('p-monththeme').textContent = `${m.theme} — ${m.themeDetail}`;
 
   const realEl = document.getElementById('p-real');
+  const taraEl = document.getElementById('p-tara');
+  let realNakshatra = null;
+
   if(m.real && m.real[d-1]){
+    realNakshatra = m.real[d-1];
     realEl.style.display = 'block';
-    realEl.textContent = `Real sourced data: Moon in ${m.real[d-1]} Nakshatra on this date (Ujjain panchang).`;
+    realEl.className = 'real-block';
+    realEl.textContent = `Real sourced data: Moon in ${realNakshatra} Nakshatra on this date (Ujjain panchang).`;
+  } else if(m.specialReal && m.specialReal[d]){
+    realEl.style.display = 'block';
+    realEl.className = 'real-block';
+    realEl.textContent = `Real sourced data: Moon Nakshatra on this date — ${m.specialReal[d]} (Ujjain panchang).`;
+    realNakshatra = "Shravana";
   } else {
     realEl.style.display = 'none';
   }
 
-  document.getElementById('p-text').textContent = merged.text;
+  if(realNakshatra){
+    const tara = tarabalamFor(realNakshatra);
+    if(tara){
+      taraEl.style.display = 'block';
+      taraEl.className = 'real-block' + (tara.good ? '' : ' warn');
+      taraEl.textContent = `Tarabalam vs. your birth Nakshatra (Jyeshtha): ${tara.name} tara — ${tara.read}.`;
+    } else {
+      taraEl.style.display = 'none';
+    }
+  } else {
+    taraEl.style.display = 'none';
+  }
+
+  document.getElementById('p-text').textContent = textStr;
   document.getElementById('p-numbers').textContent = m.numbers;
   document.getElementById('overlay').classList.add('open');
 }
+
 function closePanel(){
   document.getElementById('overlay').classList.remove('open');
 }
