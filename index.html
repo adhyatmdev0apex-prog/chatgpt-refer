@@ -27,7 +27,7 @@
   }
   header{
     max-width:760px;
-    margin:0 auto 34px;
+    margin:0 auto 20px;
     text-align:center;
   }
   .eyebrow{
@@ -50,9 +50,22 @@
     font-family:'Helvetica Neue',Arial,sans-serif;
     font-size:13.5px;
     line-height:1.6;
-    max-width:520px;
+    max-width:560px;
     margin:0 auto;
   }
+  .notice{
+    max-width:640px;
+    margin:18px auto 24px;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11.5px;
+    line-height:1.7;
+    color:var(--moon);
+    background:rgba(159,180,217,.06);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 18px;
+  }
+  .notice b{color:var(--gold);}
   .core{
     max-width:760px;
     margin:0 auto 28px;
@@ -96,18 +109,22 @@
     font-size:20px;
     color:var(--gold);
   }
+  .real-tag{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:9.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#7fbf8f;
+    border:1px solid #2f4a37;
+    background:rgba(127,191,143,.08);
+    padding:2px 8px;
+    border-radius:99px;
+  }
   .month-theme{
     font-family:'Helvetica Neue',Arial,sans-serif;
     font-size:11.5px;
     color:var(--dim);
     letter-spacing:.02em;
-  }
-  .numbers-line{
-    font-family:'Helvetica Neue',Arial,sans-serif;
-    font-size:11px;
-    color:var(--ember);
-    margin-top:6px;
-    line-height:1.5;
   }
   .grid{
     display:grid;
@@ -158,8 +175,15 @@
     border-radius:50%;
     background:var(--ember);
   }
+  .day.hasreal::before{
+    content:'';
+    position:absolute;
+    bottom:4px; right:4px;
+    width:4px; height:4px;
+    border-radius:50%;
+    background:#7fbf8f;
+  }
 
-  /* detail panel */
   .overlay{
     position:fixed; inset:0;
     background:rgba(6,8,16,.72);
@@ -179,6 +203,8 @@
     border-radius:16px;
     padding:26px 26px 22px;
     box-shadow:0 20px 60px rgba(0,0,0,.5);
+    max-height:85vh;
+    overflow-y:auto;
   }
   .panel .date{
     font-family:'Helvetica Neue',Arial,sans-serif;
@@ -199,6 +225,16 @@
     font-size:12px;
     color:var(--moon);
     margin-bottom:16px;
+  }
+  .panel .real-block{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11.5px;
+    color:#7fbf8f;
+    background:rgba(127,191,143,.07);
+    border:1px solid #2f4a37;
+    border-radius:10px;
+    padding:8px 12px;
+    margin-bottom:14px;
   }
   .panel p{
     line-height:1.65;
@@ -242,8 +278,12 @@
 <header>
   <div class="eyebrow">Vedic + Numerology Blueprint</div>
   <h1>The 2026 <em>Energy</em> Calendar</h1>
-  <p class="sub">Click a date to pull the full breakdown — day vibration blended with that month's theme, unwatered-down. Nothing's printed on the grid itself.</p>
+  <p class="sub">Click a date for the full breakdown — day-cycle vibration blended with that month's theme.</p>
 </header>
+
+<div class="notice">
+  <b>What's real vs. what's a read:</b> January–April dates carry the actual sourced Nakshatra (Moon-mansion) for that day, pulled from a live Vedic panchang calendar for Ujjain — marked with a green dot. May–December use the same numerology blend without a real transit tag layered on, since pulling verified daily Nakshatra data for the full year wasn't practical here. Either way, the "prediction" text itself is a numerology + astrology read, not a scientific calculation — treat it as a fun lens, not a plan.
+</div>
 
 <div class="core">
   <div class="pill">Birth Number <b>1</b> — Sun</div>
@@ -259,6 +299,7 @@
     <div class="date" id="p-date"></div>
     <h2 id="p-title"></h2>
     <div class="theme-line" id="p-monththeme"></div>
+    <div class="real-block" id="p-real" style="display:none;"></div>
     <p id="p-text"></p>
     <div class="numbers" id="p-numbers"></div>
     <button class="close" onclick="closePanel()">Close</button>
@@ -266,7 +307,7 @@
 </div>
 
 <footer>
-  Day-vibe cycle repeats every 31 days, but every date's prediction is generated fresh against that month's theme. Oct 19 is your Destiny Shift day — personal year turns to 7.
+  Day-vibe cycle repeats every 31 days, but the outcome text is unique to each date because it's blended with that month's theme. Oct 19 is your Destiny Shift day — personal year turns to 7.
 </footer>
 
 <script>
@@ -306,29 +347,33 @@ const dayVibes = [
 
 const months2026 = [
 {name:"January", days:31, theme:"Internal Mirror", themeDetail:"testing personal boundaries, sorting out real friends",
-  numbers:"Sun(1) forces you to draw hard lines on who's actually in your corner. Ketu(7) runs the background audit on everyone's motives. Mars(9) has no patience for people who fail the test."},
+  numbers:"Sun(1) forces you to draw hard lines on who's actually in your corner. Ketu(7) runs the background audit on everyone's motives. Mars(9) has no patience for people who fail the test.",
+  real:["Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Ardra","Punarvasu"]},
 {name:"February", days:28, theme:"Saturn Grind", themeDetail:"heavy discipline, friction if you slack off",
-  numbers:"Sun(1) wants to lead but Saturn blocks shortcuts — grind or get exposed. Ketu(7) turns inward, auditing your own systems. Mars(9) gets irritable when structure feels slow."},
+  numbers:"Sun(1) wants to lead but Saturn blocks shortcuts — grind or get exposed. Ketu(7) turns inward, auditing your own systems. Mars(9) gets irritable when structure feels slow.",
+  real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu"]},
 {name:"March", days:31, theme:"Solar Stage", themeDetail:"charisma peaks, natural leadership shines",
-  numbers:"Sun(1) is home turf this month — leadership is effortless. Ketu(7) still wants depth over performance, don't get shallow. Mars(9) executes visibly, in front of an audience."},
+  numbers:"Sun(1) is home turf this month — leadership is effortless. Ketu(7) still wants depth over performance, don't get shallow. Mars(9) executes visibly, in front of an audience.",
+  real:["Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Krittika","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni"]},
 {name:"April", days:30, theme:"Deep Dive", themeDetail:"intense intellectual curiosity, chasing niche technical rabbit holes",
-  numbers:"Sun(1) takes a back seat to focus. Ketu(7) is fully activated — this is your best research and dev month. Mars(9) provides the stamina to grind through complexity."},
+  numbers:"Sun(1) takes a back seat to focus. Ketu(7) is fully activated — this is your best research and dev month. Mars(9) provides the stamina to grind through complexity.",
+  real:["Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati","Ashwini","Bharani","Rohini","Mrigashirsha","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra"]},
 {name:"May", days:31, theme:"Harmonic Wave", themeDetail:"creative breakthroughs, peaceful family time",
-  numbers:"Sun(1) softens, less need to dominate. Ketu(7) channels into creative synthesis instead of pure analysis. Mars(9) cools off — use the calm, don't fight it."},
+  numbers:"Sun(1) softens, less need to dominate. Ketu(7) channels into creative synthesis instead of pure analysis. Mars(9) cools off — use the calm, don't fight it.", real:null},
 {name:"June", days:30, theme:"Solo Quest", themeDetail:"intense independence, trusting only your own precise methods",
-  numbers:"Sun(1) and Ketu(7) align hard — lead yourself, trust no committee. Mars(9) executes solo projects with zero need for validation."},
+  numbers:"Sun(1) and Ketu(7) align hard — lead yourself, trust no committee. Mars(9) executes solo projects with zero need for validation.", real:null},
 {name:"July", days:31, theme:"Infrastructure Shift", themeDetail:"daily routines and personal fitness take absolute priority",
-  numbers:"Sun(1) demands consistency, not bursts. Ketu(7) analyzes your own systems and habits. Mars(9) wants physical output — don't let it sit idle."},
+  numbers:"Sun(1) demands consistency, not bursts. Ketu(7) analyzes your own systems and habits. Mars(9) wants physical output — don't let it sit idle.", real:null},
 {name:"August", days:31, theme:"Mars Fire", themeDetail:"high energy, fiercely competitive, major risk of impatience or temper",
-  numbers:"Sun(1) and Mars(9) both want to dominate — expect an aggressive, high-velocity month. Ketu(7) is the only thing keeping you from burning bridges out of impatience."},
+  numbers:"Sun(1) and Mars(9) both want to dominate — expect an aggressive, high-velocity month. Ketu(7) is the only thing keeping you from burning bridges out of impatience.", real:null},
 {name:"September", days:30, theme:"Grand Purge", themeDetail:"forcefully clearing out old habits right before your birthday month",
-  numbers:"Sun(1) wants a clean slate before the new personal year. Ketu(7) cuts anything that no longer serves the mission, without sentiment. Mars(9) executes the purge fast."},
+  numbers:"Sun(1) wants a clean slate before the new personal year. Ketu(7) cuts anything that no longer serves the mission, without sentiment. Mars(9) executes the purge fast.", real:null},
 {name:"October", days:31, theme:"Destiny Shift", themeDetail:"major milestone — on Oct 19 your personal year permanently turns to 7",
-  numbers:"Sun(1) hands off control mid-month. Ketu(7) takes over as your dominant frequency going forward — deeper focus, less noise. Mars(9) executes the transition hard."},
+  numbers:"Sun(1) hands off control mid-month. Ketu(7) takes over as your dominant frequency going forward — deeper focus, less noise. Mars(9) executes the transition hard.", real:null},
 {name:"November", days:30, theme:"Psychic Scorpio Ocean", themeDetail:"deep mental processing, terrifyingly sharp intuition",
-  numbers:"Sun(1) recedes, ego takes a back seat. Ketu(7) is fully in charge — this is peak analytical and intuitive territory. Mars(9) gives you the drive to act on what you sense."},
+  numbers:"Sun(1) recedes, ego takes a back seat. Ketu(7) is fully in charge — this is peak analytical and intuitive territory. Mars(9) gives you the drive to act on what you sense.", real:null},
 {name:"December", days:31, theme:"Manifestation Peak", themeDetail:"recognition, feeling grounded and steady close to the year",
-  numbers:"Sun(1) gets the credit it was chasing all year. Ketu(7)'s quiet work finally shows results. Mars(9) closes out strong, no loose threads."},
+  numbers:"Sun(1) gets the credit it was chasing all year. Ketu(7)'s quiet work finally shows results. Mars(9) closes out strong, no loose threads.", real:null},
 ];
 
 const dowLabels = ["S","M","T","W","T","F","S"];
@@ -365,7 +410,7 @@ months2026.forEach((m, mi) => {
 
   const head = document.createElement('div');
   head.className = 'month-head';
-  head.innerHTML = `<div class="month-name">${m.name} 2026</div>`;
+  head.innerHTML = `<div class="month-name">${m.name} 2026</div>` + (m.real ? `<div class="real-tag">Real Nakshatra sourced</div>` : '');
   card.appendChild(head);
 
   const themeEl = document.createElement('div');
@@ -392,7 +437,8 @@ months2026.forEach((m, mi) => {
   for(let d=1; d<=m.days; d++){
     const cell = document.createElement('div');
     const isSpecial = (m.name==="October" && d===19);
-    cell.className = 'day' + (isSpecial ? ' special' : '');
+    const hasReal = !!(m.real && m.real[d-1]);
+    cell.className = 'day' + (isSpecial ? ' special' : '') + (hasReal ? ' hasreal' : '');
     cell.textContent = d;
     cell.addEventListener('click', () => openPanel(mi, d));
     grid.appendChild(cell);
@@ -411,6 +457,15 @@ function openPanel(mi, d){
     ? "Destiny Shift Day — Personal Year → 7"
     : `Day ${dayIdx+1}: ${merged.dt} meets ${merged.mt}`;
   document.getElementById('p-monththeme').textContent = `${m.theme} — ${m.themeDetail}`;
+
+  const realEl = document.getElementById('p-real');
+  if(m.real && m.real[d-1]){
+    realEl.style.display = 'block';
+    realEl.textContent = `Real sourced data: Moon in ${m.real[d-1]} Nakshatra on this date (Ujjain panchang).`;
+  } else {
+    realEl.style.display = 'none';
+  }
+
   document.getElementById('p-text').textContent = merged.text;
   document.getElementById('p-numbers').textContent = m.numbers;
   document.getElementById('overlay').classList.add('open');
