@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>File Download Center</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,Arial,sans-serif;
+}
+
+body{
+
+background:linear-gradient(135deg,#0f172a,#1e293b,#111827);
+
+min-height:100vh;
+
+padding:40px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:flex-start;
+
+color:white;
+
+}
+
+.container{
+
+width:100%;
+
+max-width:850px;
+
+background:rgba(255,255,255,.08);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:18px;
+
+padding:35px;
+
+box-shadow:0 20px 60px rgba(0,0,0,.45);
+
+}
+
+h1{
+
+text-align:center;
+
+margin-bottom:25px;
+
+font-size:40px;
+
+}
+
+#search{
+
+width:100%;
+
+padding:15px 18px;
+
+font-size:16px;
+
+border:none;
+
+outline:none;
+
+border-radius:10px;
+
+margin-bottom:25px;
+
+}
+
+.file{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:18px;
+
+margin-bottom:15px;
+
+border-radius:12px;
+
+background:rgba(255,255,255,.08);
+
+border:1px solid rgba(255,255,255,.06);
+
+transition:.25s;
+
+}
+
+.file:hover{
+
+transform:translateY(-2px);
+
+background:rgba(255,255,255,.12);
+
+}
+
+.left{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+overflow:hidden;
+
+}
+
+.icon{
+
+font-size:32px;
+
+width:45px;
+
+text-align:center;
+
+}
+
+.filename{
+
+font-size:18px;
+
+font-weight:500;
+
+word-break:break-all;
+
+}
+
+.download{
+
+text-decoration:none;
+
+}
+
+.download button{
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:10px 18px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:15px;
+
+transition:.25s;
+
+}
+
+.download button:hover{
+
+background:#1d4ed8;
+
+}
+
+.empty{
+
+text-align:center;
+
+padding:40px;
+
+color:#cbd5e1;
+
+font-size:18px;
+
+}
+
+.footer{
+
+margin-top:20px;
+
+text-align:center;
+
+color:#94a3b8;
+
+font-size:14px;
+
+}
+
+@media(max-width:650px){
+
+.file{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:15px;
+
+}
+
+.download{
+
+width:100%;
+
+}
+
+.download button{
+
+width:100%;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📂 File Download Center</h1>
+
+<input
+
+id="search"
+
+type="text"
+
+placeholder="🔍 Search files...">
+
+<div id="list"></div>
+
+<div class="footer">
+
+Powered by Render Static Site
+
+</div>
+
+</div>
+
+<script>
+
+const ICONS={
+
+ppt:"📊",
+pptx:"📊",
+
+doc:"📘",
+docx:"📘",
+
+pdf:"📕",
+
+xls:"📗",
+xlsx:"📗",
+
+csv:"📈",
+
+txt:"📄",
+
+zip:"📦",
+rar:"📦",
+7z:"📦",
+
+png:"🖼️",
+jpg:"🖼️",
+jpeg:"🖼️",
+gif:"🖼️",
+webp:"🖼️",
+svg:"🎨",
+ico:"🎨",
+
+mp3:"🎵",
+wav:"🎵",
+ogg:"🎵",
+
+mp4:"🎥",
+avi:"🎥",
+mov:"🎥",
+mkv:"🎥",
+
+html:"🌐",
+css:"🎨",
+js:"⚙️",
+json:"🗂️",
+xml:"🗂️",
+
+exe:"💻",
+apk:"📱",
+iso:"💿",
+
+py:"🐍",
+java:"☕",
+cpp:"⚙️",
+c:"⚙️",
+
+default:"📁"
+
+};
+
+let files=[];
+
+const list=document.getElementById("list");
+
+const search=document.getElementById("search");
+
+function getIcon(file){
+
+const ext=file.split(".").pop().toLowerCase();
+
+return ICONS[ext]||ICONS.default;
+
+}
+
+function render(){
+
+const term=search.value.toLowerCase();
+
+list.innerHTML="";
+
+const filtered=files.filter(f=>f.toLowerCase().includes(term));
+
+if(filtered.length===0){
+
+list.innerHTML='<div class="empty">No matching files found.</div>';
+
+return;
+
+}
+
+filtered.forEach(file=>{
+
+const icon=getIcon(file);
+
+list.innerHTML+=`
+
+<div class="file">
+
+<div class="left">
+
+<div class="icon">${icon}</div>
+
+<div class="filename">${file}</div>
+
+</div>
+
+<a class="download"
+
+href="ppt/${encodeURIComponent(file)}"
+
+download>
+
+<button>⬇ Download</button>
+
+</a>
+
+</div>
+
+`;
+
+});
+
+}
+
+fetch("files.json")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+files=data.sort((a,b)=>a.localeCompare(b));
+
+render();
+
+})
+
+.catch(()=>{
+
+list.innerHTML='<div class="empty">Unable to load files.json</div>';
+
+});
+
+search.addEventListener("input",render);
+
+</script>
+
+</body>
+
+</html>
