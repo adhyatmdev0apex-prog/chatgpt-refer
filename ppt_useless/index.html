@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenExplorer</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Syntax highlighting theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Top Navigation & Controls -->
+    <header class="toolbar">
+        <div class="logo">🚀 OpenExplorer</div>
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="🔎 Search resources..." autocomplete="off">
+            <select id="category-select">
+                <option value="all">All Files</option>
+                <option value="image">Images</option>
+                <option value="video">Videos</option>
+                <option value="audio">Audio</option>
+                <option value="text">Documents</option>
+                <option value="code">Code</option>
+                <option value="office">Office</option>
+                <option value="archive">Archives</option>
+                <option value="pdf">PDF</option>
+                <option value="binary">Binary</option>
+            </select>
+            <select id="sort-select">
+                <option value="name">Sort by Name</option>
+                <option value="type">Sort by Type</option>
+                <option value="ext">Sort by Ext</option>
+            </select>
+        </div>
+        <div class="stats" id="app-stats">0 Files</div>
+    </header>
+
+    <!-- Main Explorer Grid -->
+    <main class="explorer-grid" id="explorer-grid">
+        <!-- JS injects cards here -->
+    </main>
+
+    <!-- Universal Preview Modal -->
+    <div id="preview-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="preview-filename">filename.ext</span>
+                <div class="modal-controls">
+                    <button id="btn-download" class="btn btn-primary">⬇ Download</button>
+                    <button id="btn-close-preview" class="btn btn-secondary">✖ Close</button>
+                </div>
+            </div>
+            <div id="preview-content" class="modal-body">
+                <!-- JS injects viewer components here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- External Library CDNs for advanced previews -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+    <!-- Boot the App -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
