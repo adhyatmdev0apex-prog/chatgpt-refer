@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Welcome to the Chaos.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+--bg:#f6f1e8;
+--card:#fffaf3;
+--text:#2c2925;
+--sub:#666055;
+--accent:#cf7d2a;
+--green:#2e8b57;
+--border:#e7dccd;
+
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:Inter,sans-serif;
+
+background:
+radial-gradient(circle at top right,#fff5d8 0%,transparent 25%),
+radial-gradient(circle at bottom left,#e8f7ef 0%,transparent 30%),
+var(--bg);
+
+color:var(--text);
+
+padding:70px 20px;
+
+line-height:1.8;
+
+}
+
+.container{
+
+max-width:980px;
+margin:auto;
+
+}
+
+.hero{
+
+text-align:center;
+margin-bottom:70px;
+
+}
+
+pre{
+
+font-family:"JetBrains Mono",monospace;
+font-size:11px;
+display:inline-block;
+color:#1d1d1d;
+
+}
+
+h1{
+
+margin-top:20px;
+
+font-size:58px;
+font-weight:800;
+
+}
+
+.tag{
+
+font-size:20px;
+
+color:var(--accent);
+
+font-weight:700;
+
+margin-top:10px;
+
+}
+
+.card{
+
+background:var(--card);
+
+padding:35px;
+
+margin:30px 0;
+
+border-radius:20px;
+
+border:1px solid var(--border);
+
+box-shadow:
+
+0 12px 30px rgba(0,0,0,.05);
+
+}
+
+.card h2{
+
+margin-bottom:18px;
+
+font-size:30px;
+
+}
+
+.card p{
+
+color:var(--sub);
+
+margin-bottom:18px;
+
+font-size:17px;
+
+}
+
+.list{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+gap:18px;
+
+margin-top:25px;
+
+}
+
+.item{
+
+background:white;
+
+border-radius:14px;
+
+padding:18px;
+
+border:1px solid var(--border);
+
+font-weight:600;
+
+transition:.25s;
+
+}
+
+.item:hover{
+
+transform:translateY(-4px);
+
+}
+
+.terminal{
+
+background:#262626;
+
+color:#d6d6d6;
+
+padding:25px;
+
+border-radius:18px;
+
+font-family:"JetBrains Mono",monospace;
+
+overflow:auto;
+
+}
+
+.green{
+
+color:#76ffb1;
+
+}
+
+.orange{
+
+color:#ffbf69;
+
+}
+
+.footer{
+
+margin-top:60px;
+
+text-align:center;
+
+color:#777;
+
+font-size:15px;
+
+}
+
+.quote{
+
+font-size:22px;
+
+font-weight:700;
+
+text-align:center;
+
+color:var(--green);
+
+margin:25px 0;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="hero">
+
+<pre>
+██╗    ██╗  ███████╗  ██╗        ██████╗   ██████╗   ███╗   ███╗  ███████╗
+██║    ██║  ██╔════╝  ██║       ██╔════╝  ██╔═══██╗  ████╗ ████║  ██╔════╝
+██║ █╗ ██║  █████╗    ██║       ██║       ██║   ██║  ██╔████╔██║  █████╗
+██║███╗██║  ██╔══╝    ██║       ██║       ██║   ██║  ██║╚██╔╝██║  ██╔══╝
+╚███╔███╔╝  ███████╗  ███████╗  ╚██████╗  ╚██████╔╝  ██║ ╚═╝ ██║  ███████╗
+ ╚══╝╚══╝   ╚══════╝  ╚══════╝   ╚═════╝   ╚═════╝   ╚═╝     ╚═╝  ╚══════╝
+</pre>
+
+<h1>to the chaos.</h1>
+
+<div class="tag">👋 ayo.</div>
+
+</div>
+
+<div class="card">
+
+<h2>You weren't really supposed to end up here...</h2>
+
+<p>This isn't a company website.</p>
+
+<p>This isn't a portfolio.</p>
+
+<p>This isn't even supposed to make sense.</p>
+
+<p>It's just my little corner of the internet where every random idea somehow ends up becoming a project.</p>
+
+<p>Some things are polished.</p>
+
+<p>Some are held together with hope, coffee, and a suspicious amount of Stack Overflow.</p>
+
+<p>Some never make it past <b>"lemme build this real quick."</b></p>
+
+</div>
+
+<div class="card">
+
+<h2>🧠 What lives here?</h2>
+
+<div class="list">
+
+<div class="item">💻 Random code that somehow works</div>
+
+<div class="item">🎨 UI experiments</div>
+
+<div class="item">🤖 AI projects</div>
+
+<div class="item">📚 School projects</div>
+
+<div class="item">⚡ Weird ideas that escaped my brain</div>
+
+<div class="item">🛠️ Half-finished experiments</div>
+
+<div class="item">☕ Things I built at 2 AM because sleep is apparently optional</div>
+
+</div>
+
+<div class="quote">
+
+"bro... what if I made this?"
+
+</div>
+
+<p>...there's a pretty good chance it eventually lands somewhere in this repository.</p>
+
+</div>
+
+<div class="terminal">
+
+<span class="green">&gt; whoami</span>
+
+<br><br>
+
+Adhyatm
+
+<br><br>
+
+<span class="green">&gt; purpose</span>
+
+<br><br>
+
+Building random stuff.
+
+<br><br>
+
+<span class="green">&gt; current_status</span>
+
+<br><br>
+
+Probably coding...
+
+<br><br>
+
+<span class="green">&gt; warning</span>
+
+<br><br>
+
+Some projects may be unfinished.<br>
+
+Some may be abandoned.<br>
+
+Some somehow became useful.
+
+<br><br>
+
+<span class="green">&gt; philosophy</span>
+
+<br><br>
+
+<span class="orange">Curiosity > Perfection</span>
+
+<br><br>
+
+<span class="green">&gt; exit</span>
+
+<br><br>
+
+Nope.
+
+</div>
+
+<div class="card">
+
+<h2>🚧 So... why does this website exist?</h2>
+
+<p>Honestly?</p>
+
+<p>Because building random things is fun.</p>
+
+<p>There's no roadmap.</p>
+
+<p>No startup.</p>
+
+<p>No business plan.</p>
+
+<p>Just curiosity, late-night ideas, and an unhealthy tendency to turn shower thoughts into Git commits.</p>
+
+<p>If something here seems oddly specific...</p>
+
+<p><b>...it probably solved a problem I had at 1:47 AM.</b></p>
+
+</div>
+
+<div class="footer">
+
+<p>Have fun looking around.</p>
+
+<p>Or don't.</p>
+
+<p>Either way, thanks for accidentally visiting my digital junk drawer. 🙂</p>
+
+<br>
+
+<b>Built with curiosity. ☕</b>
+
+<br>
+
+Broken occasionally. 🛠️
+
+<br>
+
+Powered by intrusive thoughts and questionable decisions. 💀
+
+</div>
+
+</div>
+
+</body>
+</html>
