@@ -1,15 +1,31 @@
-// OpenExplorer v2.1 Refactored Master Controller
+// OpenExplorer v2.2 Master Controller (Updated Games Module)
 
 const State = {
     files: [],
     filteredFiles: [],
     activeTab: 'files',
-    games: [
+    
+    // 🌐 EXTERNAL GAMES
+    externalGames: [
         { id: 'eagler', name: 'Eaglercraft Hub', icon: '🟦', url: 'https://eaglercraft.com', allowIframe: true },
         { id: 'poki', name: 'Poki Games', icon: '🟩', url: 'https://poki.com', allowIframe: false },
         { id: 'crazygames', name: 'CrazyGames', icon: '🟥', url: 'https://www.crazygames.com', allowIframe: false },
         { id: 'itch', name: 'itch.io Web Games', icon: '🟪', url: 'https://itch.io/games/free/web', allowIframe: false }
     ],
+
+    // 💾 LOCAL GAMES
+    localGames: [
+        { 
+            id: 'gfiles', 
+            name: 'GFiles', 
+            desc: 'HTML5 Game Collection', 
+            icon: '🎮', 
+            url: './games/gfiles/index.html', 
+            allowIframe: true, 
+            isLocal: true 
+        }
+    ],
+
     apps: [
         { id: 'notes', name: 'Quick Notepad', icon: '📝', type: 'internal-notes' },
         { id: 'calc', name: 'Calculator', icon: '🧮', type: 'internal-calc' }
@@ -37,7 +53,7 @@ class AppController {
         this.renderApps();
     }
 
-    // Router Listener
+    // --- 🧭 HASH ROUTER ---
     initRouter() {
         const handleRoute = () => {
             const hash = window.location.hash.replace('#', '') || 'files';
@@ -59,7 +75,7 @@ class AppController {
         handleRoute();
     }
 
-    // Manifest Loader
+    // --- 📁 MANIFEST LOADER ---
     async initManifest() {
         try {
             const res = await fetch('./files.json');
@@ -92,32 +108,59 @@ class AppController {
                     <button class="btn btn-secondary download-btn">Download</button>
                 </div>
             `;
-            card.querySelector('.preview-btn').onclick = () => this.openFilePreview(file);
-            card.querySelector('.download-btn').onclick = () => window.open(file.path, '_blank');
+            card.querySelector('.preview-btn').onclick = (e) => {
+                e.stopPropagation();
+                this.openFilePreview(file);
+            };
+            card.querySelector('.download-btn').onclick = (e) => {
+                e.stopPropagation();
+                window.open(file.path, '_blank');
+            };
+            card.onclick = () => this.openFilePreview(file);
             grid.appendChild(card);
         });
     }
 
-    // FIXED: Embedded Game Launcher with fallback
+    // --- 🎮 RENDER GAMES TAB (SEPARATED SECTIONS) ---
     renderGames() {
-        const grid = document.getElementById('games-grid');
-        grid.innerHTML = '';
-        State.games.forEach(game => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-icon">${game.icon}</div>
-                <div class="card-title">${game.name}</div>
-                <div class="card-sub">${game.allowIframe ? 'Embeddable' : 'External Host'}</div>
-                <div class="card-btn-group">
-                    <button class="btn btn-primary play-btn">▶ Launch Game</button>
-                </div>
-            `;
-            card.querySelector('.play-btn').onclick = () => this.openGame(game);
-            grid.appendChild(card);
-        });
+        const extGrid = document.getElementById('external-games-grid');
+        const locGrid = document.getElementById('local-games-grid');
+
+        if (extGrid) {
+            extGrid.innerHTML = '';
+            State.externalGames.forEach(game => {
+                extGrid.appendChild(this.createGameCard(game, false));
+            });
+        }
+
+        if (locGrid) {
+            locGrid.innerHTML = '';
+            State.localGames.forEach(game => {
+                locGrid.appendChild(this.createGameCard(game, true));
+            });
+        }
     }
 
+    createGameCard(game, isLocal = false) {
+        const card = document.createElement('div');
+        card.className = `card ${isLocal ? 'local-game-card' : ''}`;
+        card.innerHTML = `
+            <div class="card-icon">${game.icon}</div>
+            <div class="card-title">${game.name}</div>
+            <div class="card-sub">${game.desc || (game.allowIframe ? 'Embeddable' : 'External Host')}</div>
+            <div class="card-btn-group">
+                <button class="btn btn-primary play-btn">${isLocal ? '▶ PLAY / OPEN' : '▶ Launch Game'}</button>
+            </div>
+        `;
+        card.querySelector('.play-btn').onclick = (e) => {
+            e.stopPropagation();
+            this.openGame(game);
+        };
+        card.onclick = () => this.openGame(game);
+        return card;
+    }
+
+    // --- 🕹️ INTERNAL GAME LAUNCHER (MODAL / IFRAME) ---
     openGame(game) {
         const titleEl = document.getElementById('preview-title');
         const bodyEl = document.getElementById('preview-body');
@@ -126,12 +169,25 @@ class AppController {
 
         titleEl.textContent = game.name;
         dlBtn.classList.add('hidden');
-        extBtn.classList.remove('hidden');
-        extBtn.onclick = () => window.open(game.url, '_blank');
+
+        // Show external link only for non-local games that allow fallback
+        if (game.isLocal) {
+            extBtn.classList.add('hidden');
+        } else {
+            extBtn.classList.remove('hidden');
+            extBtn.onclick = () => window.open(game.url, '_blank');
+        }
 
         if (game.allowIframe) {
+            // Embedded iframe keeps execution strictly inside OpenExplorer modal
             bodyEl.innerHTML = `
-                <iframe src="${game.url}" class="iframe-viewer" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
+                <iframe 
+                    src="${game.url}" 
+                    class="iframe-viewer" 
+                    title="${game.name}" 
+                    allow="fullscreen; autoplay; gamepad" 
+                    allowfullscreen>
+                </iframe>
             `;
         } else {
             bodyEl.innerHTML = `
@@ -142,7 +198,8 @@ class AppController {
                 </div>
             `;
             setTimeout(() => {
-                document.getElementById('notice-ext-btn').onclick = () => window.open(game.url, '_blank');
+                const btn = document.getElementById('notice-ext-btn');
+                if (btn) btn.onclick = () => window.open(game.url, '_blank');
             }, 0);
         }
 
@@ -154,7 +211,9 @@ class AppController {
         const vidGrid = document.getElementById('media-videos-grid');
         const audGrid = document.getElementById('media-audio-grid');
 
-        imgGrid.innerHTML = ''; vidGrid.innerHTML = ''; audGrid.innerHTML = '';
+        if (imgGrid) imgGrid.innerHTML = ''; 
+        if (vidGrid) vidGrid.innerHTML = ''; 
+        if (audGrid) audGrid.innerHTML = '';
 
         State.files.forEach(file => {
             if (['image', 'video', 'audio'].includes(file.meta.category)) {
@@ -166,15 +225,16 @@ class AppController {
                 `;
                 card.onclick = () => this.openFilePreview(file);
 
-                if (file.meta.category === 'image') imgGrid.appendChild(card);
-                if (file.meta.category === 'video') vidGrid.appendChild(card);
-                if (file.meta.category === 'audio') audGrid.appendChild(card);
+                if (file.meta.category === 'image' && imgGrid) imgGrid.appendChild(card);
+                if (file.meta.category === 'video' && vidGrid) vidGrid.appendChild(card);
+                if (file.meta.category === 'audio' && audGrid) audGrid.appendChild(card);
             }
         });
     }
 
     renderApps() {
         const grid = document.getElementById('apps-grid');
+        if (!grid) return;
         grid.innerHTML = '';
         State.apps.forEach(app => {
             const card = document.createElement('div');
@@ -187,12 +247,15 @@ class AppController {
                     <button class="btn btn-primary launch-btn">Launch App</button>
                 </div>
             `;
-            card.querySelector('.launch-btn').onclick = () => this.launchApp(app);
+            card.querySelector('.launch-btn').onclick = (e) => {
+                e.stopPropagation();
+                this.launchApp(app);
+            };
+            card.onclick = () => this.launchApp(app);
             grid.appendChild(card);
         });
     }
 
-    // FIXED: Embedded Web Search Engine (No window.open())
     bindEvents() {
         const fileSearchInput = document.getElementById('file-search-input');
         const categorySelect = document.getElementById('category-select');
@@ -220,8 +283,6 @@ class AppController {
             webForm.onsubmit = (e) => {
                 e.preventDefault();
                 const q = document.getElementById('web-search-query').value;
-                
-                // Using DuckDuckGo HTML mode (iframe friendly)
                 const embedUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`;
                 
                 searchFrame.src = embedUrl;
@@ -233,10 +294,10 @@ class AppController {
             };
         }
 
-        document.getElementById('btn-close-modal').onclick = () => this.closeModal();
+        const closeBtn = document.getElementById('btn-close-modal');
+        if (closeBtn) closeBtn.onclick = () => this.closeModal();
     }
 
-    // FIXED: Full Modal Preview Engine
     async openFilePreview(file) {
         const titleEl = document.getElementById('preview-title');
         const bodyEl = document.getElementById('preview-body');
@@ -267,7 +328,6 @@ class AppController {
         }
     }
 
-    // FIXED: Clean Calculator App UI (Replaces alert())
     launchApp(app) {
         const titleEl = document.getElementById('preview-title');
         const bodyEl = document.getElementById('preview-body');
