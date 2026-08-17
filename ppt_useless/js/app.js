@@ -1,14 +1,14 @@
-// OpenExplorer v2 Unified Master Controller
+// OpenExplorer v2.1 Refactored Master Controller
 
 const State = {
     files: [],
     filteredFiles: [],
     activeTab: 'files',
     games: [
-        { id: 'poki', name: 'Poki Games', icon: '🟩', url: 'https://poki.com', embeddable: false },
-        { id: 'crazygames', name: 'CrazyGames', icon: '🟥', url: 'https://www.crazygames.com', embeddable: false },
-        { id: 'eagler', name: 'Eaglercraft Hub', icon: '🟦', url: 'https://eaglercraft.com', embeddable: true },
-        { id: 'itch', name: 'itch.io Web Games', icon: '🟪', url: 'https://itch.io/games/free/web', embeddable: false }
+        { id: 'eagler', name: 'Eaglercraft Hub', icon: '🟦', url: 'https://eaglercraft.com', allowIframe: true },
+        { id: 'poki', name: 'Poki Games', icon: '🟩', url: 'https://poki.com', allowIframe: false },
+        { id: 'crazygames', name: 'CrazyGames', icon: '🟥', url: 'https://www.crazygames.com', allowIframe: false },
+        { id: 'itch', name: 'itch.io Web Games', icon: '🟪', url: 'https://itch.io/games/free/web', allowIframe: false }
     ],
     apps: [
         { id: 'notes', name: 'Quick Notepad', icon: '📝', type: 'internal-notes' },
@@ -16,7 +16,6 @@ const State = {
     ]
 };
 
-// --- FILE TYPE DETECTOR ---
 function detectType(filename) {
     const ext = filename.split('.').pop().toLowerCase();
     if (['png','jpg','jpeg','webp','gif','svg'].includes(ext)) return { category: 'image', icon: '🖼️', typeName: 'Image' };
@@ -38,7 +37,7 @@ class AppController {
         this.renderApps();
     }
 
-    // --- 🧭 HASH ROUTER ---
+    // Router Listener
     initRouter() {
         const handleRoute = () => {
             const hash = window.location.hash.replace('#', '') || 'files';
@@ -60,7 +59,7 @@ class AppController {
         handleRoute();
     }
 
-    // --- 📁 MANIFEST LOADER ---
+    // Manifest Loader
     async initManifest() {
         try {
             const res = await fetch('./files.json');
@@ -77,7 +76,6 @@ class AppController {
         }
     }
 
-    // --- 📁 RENDER FILES TAB ---
     renderFiles() {
         const grid = document.getElementById('files-grid');
         grid.innerHTML = '';
@@ -100,7 +98,7 @@ class AppController {
         });
     }
 
-    // --- 🎮 RENDER GAMES TAB ---
+    // FIXED: Embedded Game Launcher with fallback
     renderGames() {
         const grid = document.getElementById('games-grid');
         grid.innerHTML = '';
@@ -110,23 +108,47 @@ class AppController {
             card.innerHTML = `
                 <div class="card-icon">${game.icon}</div>
                 <div class="card-title">${game.name}</div>
-                <div class="card-sub">${game.embeddable ? 'Embed Available' : 'External Link'}</div>
+                <div class="card-sub">${game.allowIframe ? 'Embeddable' : 'External Host'}</div>
                 <div class="card-btn-group">
-                    <button class="btn btn-primary play-btn">▶ Play</button>
+                    <button class="btn btn-primary play-btn">▶ Launch Game</button>
                 </div>
             `;
-            card.querySelector('.play-btn').onclick = () => {
-                if (game.embeddable) {
-                    this.openIframeModal(game.name, game.url);
-                } else {
-                    window.open(game.url, '_blank');
-                }
-            };
+            card.querySelector('.play-btn').onclick = () => this.openGame(game);
             grid.appendChild(card);
         });
     }
 
-    // --- 🖼️ RENDER MEDIA TAB ---
+    openGame(game) {
+        const titleEl = document.getElementById('preview-title');
+        const bodyEl = document.getElementById('preview-body');
+        const extBtn = document.getElementById('btn-external-link');
+        const dlBtn = document.getElementById('btn-download');
+
+        titleEl.textContent = game.name;
+        dlBtn.classList.add('hidden');
+        extBtn.classList.remove('hidden');
+        extBtn.onclick = () => window.open(game.url, '_blank');
+
+        if (game.allowIframe) {
+            bodyEl.innerHTML = `
+                <iframe src="${game.url}" class="iframe-viewer" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
+            `;
+        } else {
+            bodyEl.innerHTML = `
+                <div class="blocked-embed-notice">
+                    <h3>⚠️ External Embedding Restricted</h3>
+                    <p>${game.name} blocks direct iframe integration via security policies (CSP / X-Frame-Options).</p>
+                    <button id="notice-ext-btn" class="btn btn-primary">↗ Open Official Site (${game.name})</button>
+                </div>
+            `;
+            setTimeout(() => {
+                document.getElementById('notice-ext-btn').onclick = () => window.open(game.url, '_blank');
+            }, 0);
+        }
+
+        document.getElementById('preview-modal').classList.remove('hidden');
+    }
+
     renderMedia() {
         const imgGrid = document.getElementById('media-images-grid');
         const vidGrid = document.getElementById('media-videos-grid');
@@ -151,7 +173,6 @@ class AppController {
         });
     }
 
-    // --- 🧩 RENDER APPS TAB ---
     renderApps() {
         const grid = document.getElementById('apps-grid');
         grid.innerHTML = '';
@@ -161,9 +182,9 @@ class AppController {
             card.innerHTML = `
                 <div class="card-icon">${app.icon}</div>
                 <div class="card-title">${app.name}</div>
-                <div class="card-sub">Built-in App</div>
+                <div class="card-sub">Local Workspace Tool</div>
                 <div class="card-btn-group">
-                    <button class="btn btn-primary launch-btn">Launch</button>
+                    <button class="btn btn-primary launch-btn">Launch App</button>
                 </div>
             `;
             card.querySelector('.launch-btn').onclick = () => this.launchApp(app);
@@ -171,7 +192,7 @@ class AppController {
         });
     }
 
-    // --- 🔍 WEB SEARCH DISPATCHER ---
+    // FIXED: Embedded Web Search Engine (No window.open())
     bindEvents() {
         const fileSearchInput = document.getElementById('file-search-input');
         const categorySelect = document.getElementById('category-select');
@@ -191,22 +212,31 @@ class AppController {
         if (categorySelect) categorySelect.onchange = filterHandler;
 
         const webForm = document.getElementById('web-search-form');
+        const searchContainer = document.getElementById('search-frame-container');
+        const searchFrame = document.getElementById('search-frame');
+        const searchExtBtn = document.getElementById('btn-open-search-ext');
+
         if (webForm) {
             webForm.onsubmit = (e) => {
                 e.preventDefault();
                 const q = document.getElementById('web-search-query').value;
-                const engine = document.querySelector('input[name="engine"]:checked').value;
-                let url = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-                if (engine === 'bing') url = `https://www.bing.com/search?q=${encodeURIComponent(q)}`;
-                if (engine === 'duckduckgo') url = `https://duckduckgo.com/?q=${encodeURIComponent(q)}`;
-                window.open(url, '_blank');
+                
+                // Using DuckDuckGo HTML mode (iframe friendly)
+                const embedUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`;
+                
+                searchFrame.src = embedUrl;
+                searchContainer.classList.remove('hidden');
+
+                searchExtBtn.onclick = () => {
+                    window.open(`https://duckduckgo.com/?q=${encodeURIComponent(q)}`, '_blank');
+                };
             };
         }
 
         document.getElementById('btn-close-modal').onclick = () => this.closeModal();
     }
 
-    // --- 👁️ MODAL CONTROLLER ---
+    // FIXED: Full Modal Preview Engine
     async openFilePreview(file) {
         const titleEl = document.getElementById('preview-title');
         const bodyEl = document.getElementById('preview-body');
@@ -214,8 +244,10 @@ class AppController {
         const extBtn = document.getElementById('btn-external-link');
 
         titleEl.textContent = file.name;
-        dlBtn.onclick = () => window.open(file.path, '_blank');
         extBtn.classList.add('hidden');
+        dlBtn.classList.remove('hidden');
+        dlBtn.onclick = () => window.open(file.path, '_blank');
+
         bodyEl.innerHTML = 'Loading viewer...';
         document.getElementById('preview-modal').classList.remove('hidden');
 
@@ -231,30 +263,54 @@ class AppController {
                 bodyEl.innerHTML = `<pre class="text-viewer">${text.replace(/</g, "&lt;")}</pre>`;
             } catch (err) { bodyEl.innerHTML = 'Error reading file text.'; }
         } else {
-            bodyEl.innerHTML = `<p style="color:var(--text-muted);">Binary file. Triggering raw download options.</p>`;
+            bodyEl.innerHTML = `<p style="color:var(--text-muted);">Binary resource. Download enabled.</p>`;
         }
     }
 
-    openIframeModal(title, url) {
-        document.getElementById('preview-title').textContent = title;
+    // FIXED: Clean Calculator App UI (Replaces alert())
+    launchApp(app) {
+        const titleEl = document.getElementById('preview-title');
         const bodyEl = document.getElementById('preview-body');
+        const dlBtn = document.getElementById('btn-download');
         const extBtn = document.getElementById('btn-external-link');
 
-        extBtn.classList.remove('hidden');
-        extBtn.onclick = () => window.open(url, '_blank');
+        titleEl.textContent = app.name;
+        dlBtn.classList.add('hidden');
+        extBtn.classList.add('hidden');
 
-        bodyEl.innerHTML = `<iframe src="${url}" class="iframe-viewer"></iframe>`;
-        document.getElementById('preview-modal').classList.remove('hidden');
-    }
-
-    launchApp(app) {
-        document.getElementById('preview-title').textContent = app.name;
-        const bodyEl = document.getElementById('preview-body');
         if (app.type === 'internal-notes') {
-            bodyEl.innerHTML = `<textarea style="width:100%; height:100%; background:var(--bg-main); color:white; padding:1rem; border:none; outline:none; font-family:monospace;" placeholder="Write temporary notes here..."></textarea>`;
+            bodyEl.innerHTML = `
+                <textarea style="width:100%; height:100%; background:var(--bg-main); color:white; padding:1rem; border:none; outline:none; font-family:monospace;" placeholder="Write temporary workspace notes here..."></textarea>
+            `;
         } else if (app.type === 'internal-calc') {
-            bodyEl.innerHTML = `<div style="text-align:center;"><h3>Simple Calc</h3><input type="text" id="calc-in" style="margin:1rem; padding:0.5rem;"><button class="btn btn-primary" onclick="alert(eval(document.getElementById('calc-in').value))">Calculate</button></div>`;
+            bodyEl.innerHTML = `
+                <div class="calc-container">
+                    <div id="calc-display" class="calc-display">0</div>
+                    <div class="calc-grid">
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText = ''">C</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '/'">/</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '*'">*</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '-'">-</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '7'">7</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '8'">8</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '9'">9</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '+'">+</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '4'">4</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '5'">5</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '6'">6</button>
+                        <button class="calc-btn" onclick="
+                            try { document.getElementById('calc-display').innerText = eval(document.getElementById('calc-display').innerText); } 
+                            catch(e) { document.getElementById('calc-display').innerText = 'Error'; }
+                        ">=</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '1'">1</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '2'">2</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '3'">3</button>
+                        <button class="calc-btn" onclick="document.getElementById('calc-display').innerText += '0'">0</button>
+                    </div>
+                </div>
+            `;
         }
+
         document.getElementById('preview-modal').classList.remove('hidden');
     }
 
