@@ -226,3 +226,32 @@ body {
     cursor: pointer;
 }
 .calc-btn:hover { background: var(--accent); }
+
+/* Games Section Dividers */
+.games-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.games-section-title {
+    margin-bottom: 1.25rem;
+    color: var(--accent);
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+/* Local Games Distinct Styling */
+.card.local-game-card {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+
+.card.local-game-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+}
