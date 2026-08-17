@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenExplorer v2 🚀</title>
+    <title>OpenExplorer v2.1 🚀</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="./css/style.css">
     
@@ -15,9 +15,9 @@
 </head>
 <body>
 
-    <!-- Persistent Header Navigation -->
+    <!-- Navigation Header -->
     <header class="navbar">
-        <div class="brand">🗂️ OpenExplorer <span class="version">v2</span></div>
+        <div class="brand">🗂️ OpenExplorer <span class="version">v2.1</span></div>
         <nav class="nav-tabs">
             <a href="#files" class="nav-btn active" data-tab="files">📁 Files</a>
             <a href="#games" class="nav-btn" data-tab="games">🎮 Games</a>
@@ -29,7 +29,7 @@
 
     <main class="content-area">
 
-        <!-- 📁 TAB 1: FILES EXPLORER -->
+        <!-- 📁 TAB 1: FILES -->
         <section id="tab-files" class="tab-page active">
             <div class="toolbar">
                 <input type="text" id="file-search-input" placeholder="🔎 Filter local files..." autocomplete="off">
@@ -46,32 +46,35 @@
             <div class="explorer-grid" id="files-grid"></div>
         </section>
 
-        <!-- 🎮 TAB 2: GAMES LAUNCHER -->
+        <!-- 🎮 TAB 2: GAMES -->
         <section id="tab-games" class="tab-page">
             <div class="section-header">
                 <h2>🎮 Game Launcher</h2>
-                <p>Play hosted web games embedded directly or open platform sites.</p>
+                <p>Launch games directly inside OpenExplorer.</p>
             </div>
             <div class="explorer-grid" id="games-grid"></div>
         </section>
 
-        <!-- 🔍 TAB 3: WEB & FILE SEARCH -->
+        <!-- 🔍 TAB 3: SEARCH -->
         <section id="tab-search" class="tab-page">
             <div class="search-hero">
-                <h2>🌐 Web & Resource Search</h2>
+                <h2>🌐 Integrated Web Search</h2>
                 <form id="web-search-form" class="search-box-container">
-                    <input type="text" id="web-search-query" placeholder="Search the internet or jump to query..." required>
+                    <input type="text" id="web-search-query" placeholder="Search DuckDuckGo embedded..." required>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
-                <div class="engine-selector">
-                    <label><input type="radio" name="engine" value="google" checked> Google</label>
-                    <label><input type="radio" name="engine" value="bing"> Bing</label>
-                    <label><input type="radio" name="engine" value="duckduckgo"> DuckDuckGo</label>
+            </div>
+            <!-- Embedded Search Frame Container -->
+            <div id="search-frame-container" class="search-frame-wrapper hidden">
+                <div class="frame-bar">
+                    <span id="search-status">Results: DuckDuckGo</span>
+                    <button id="btn-open-search-ext" class="btn btn-secondary">↗ Open in New Tab</button>
                 </div>
+                <iframe id="search-frame" class="embedded-frame"></iframe>
             </div>
         </section>
 
-        <!-- 🖼️ TAB 4: MEDIA GALLERY -->
+        <!-- 🖼️ TAB 4: MEDIA -->
         <section id="tab-media" class="tab-page">
             <div class="section-header">
                 <h2>🖼️ Media Collection</h2>
@@ -92,25 +95,25 @@
             </div>
         </section>
 
-        <!-- 🧩 TAB 5: APPS LAUNCHER -->
+        <!-- 🧩 TAB 5: APPS -->
         <section id="tab-apps" class="tab-page">
             <div class="section-header">
                 <h2>🧩 Web Tools & Apps</h2>
-                <p>Built-in utilities running entirely in your browser.</p>
+                <p>Run built-in tools locally inside the workspace shell.</p>
             </div>
             <div class="explorer-grid" id="apps-grid"></div>
         </section>
 
     </main>
 
-    <!-- Universal Preview & Embed Modal -->
+    <!-- Unified Shell Workspace Modal -->
     <div id="preview-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <span id="preview-title" class="modal-title">Resource Title</span>
+                <span id="preview-title" class="modal-title">Workspace View</span>
                 <div class="modal-actions">
-                    <button id="btn-external-link" class="btn btn-secondary hidden">↗ Open External</button>
-                    <button id="btn-download" class="btn btn-primary">⬇ Download</button>
+                    <button id="btn-external-link" class="btn btn-secondary hidden">↗ Open External Site</button>
+                    <button id="btn-download" class="btn btn-primary hidden">⬇ Download</button>
                     <button id="btn-close-modal" class="btn btn-secondary">✖ Close</button>
                 </div>
             </div>
