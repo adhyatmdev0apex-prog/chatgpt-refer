@@ -3,72 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenExplorer</title>
-    <link rel="stylesheet" href="css/style.css">
-
-    <!-- Syntax highlighting theme -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-</head>
-<body>
-    <!-- Top Navigation & Controls -->
-    <header class="toolbar">
-        <div class="logo">🚀 OpenExplorer</div>
-        <div class="controls">
-            <input type="text" id="search-input" placeholder="🔎 Search resources..." autocomplete="off">
-            <select id="category-select">
-                <option value="all">All Files</option>
-                <option value="image">Images</option>
-                <option value="video">Videos</option>
-                <option value="audio">Audio</option>
-                <option value="text">Documents</option>
-                <option value="code">Code</option>
-                <option value="office">Office</option>
-                <option value="archive">Archives</option>
-                <option value="pdf">PDF</option>
-                <option value="binary">Binary</option>
-            </select>
-            <select id="sort-select">
-                <option value="name">Sort by Name</option>
-                <option value="type">Sort by Type</option>
-                <option value="ext">Sort by Ext</option>
-            </select>
-        </div>
-        <div class="stats" id="app-stats">0 Files</div>
-    </header>
-
-    <!-- Main Explorer Grid -->
-    <main class="explorer-grid" id="explorer-grid">
-        <!-- JS injects cards here -->
-    </main>
-
-    <!-- Universal Preview Modal -->
-    <div id="preview-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span id="preview-filename">filename.ext</span>
-                <div class="modal-controls">
-                    <button id="btn-download" class="btn btn-primary">⬇ Download</button>
-                    <button id="btn-close-preview" class="btn btn-secondary">✖ Close</button>
-                </div>
-            </div>
-            <div id="preview-content" class="modal-body">
-                <!-- JS injects viewer components here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- External Library CDNs for advanced previews -->
+    <title>OpenExplorer v2 🚀</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- External Viewer CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+</head>
+<body>
 
-    <!-- Boot the App -->
-    <script type="module" src="js/app.js"></script>
+    <!-- Persistent Header Navigation -->
+    <header class="navbar">
+        <div class="brand">🗂️ OpenExplorer <span class="version">v2</span></div>
+        <nav class="nav-tabs">
+            <a href="#files" class="nav-btn active" data-tab="files">📁 Files</a>
+            <a href="#games" class="nav-btn" data-tab="games">🎮 Games</a>
+            <a href="#search" class="nav-btn" data-tab="search">🔍 Search</a>
+            <a href="#media" class="nav-btn" data-tab="media">🖼️ Media</a>
+            <a href="#apps" class="nav-btn" data-tab="apps">🧩 Apps</a>
+        </nav>
+    </header>
+
+    <main class="content-area">
+
+        <!-- 📁 TAB 1: FILES EXPLORER -->
+        <section id="tab-files" class="tab-page active">
+            <div class="toolbar">
+                <input type="text" id="file-search-input" placeholder="🔎 Filter local files..." autocomplete="off">
+                <select id="category-select">
+                    <option value="all">All Categories</option>
+                    <option value="image">Images</option>
+                    <option value="video">Videos</option>
+                    <option value="audio">Audio</option>
+                    <option value="text">Text & Docs</option>
+                    <option value="code">Code</option>
+                    <option value="archive">Archives</option>
+                </select>
+            </div>
+            <div class="explorer-grid" id="files-grid"></div>
+        </section>
+
+        <!-- 🎮 TAB 2: GAMES LAUNCHER -->
+        <section id="tab-games" class="tab-page">
+            <div class="section-header">
+                <h2>🎮 Game Launcher</h2>
+                <p>Play hosted web games embedded directly or open platform sites.</p>
+            </div>
+            <div class="explorer-grid" id="games-grid"></div>
+        </section>
+
+        <!-- 🔍 TAB 3: WEB & FILE SEARCH -->
+        <section id="tab-search" class="tab-page">
+            <div class="search-hero">
+                <h2>🌐 Web & Resource Search</h2>
+                <form id="web-search-form" class="search-box-container">
+                    <input type="text" id="web-search-query" placeholder="Search the internet or jump to query..." required>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <div class="engine-selector">
+                    <label><input type="radio" name="engine" value="google" checked> Google</label>
+                    <label><input type="radio" name="engine" value="bing"> Bing</label>
+                    <label><input type="radio" name="engine" value="duckduckgo"> DuckDuckGo</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🖼️ TAB 4: MEDIA GALLERY -->
+        <section id="tab-media" class="tab-page">
+            <div class="section-header">
+                <h2>🖼️ Media Collection</h2>
+            </div>
+            <div class="media-sections">
+                <div class="media-group">
+                    <h3>🖼️ Images</h3>
+                    <div class="explorer-grid" id="media-images-grid"></div>
+                </div>
+                <div class="media-group">
+                    <h3>🎬 Videos</h3>
+                    <div class="explorer-grid" id="media-videos-grid"></div>
+                </div>
+                <div class="media-group">
+                    <h3>🎵 Audio</h3>
+                    <div class="explorer-grid" id="media-audio-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🧩 TAB 5: APPS LAUNCHER -->
+        <section id="tab-apps" class="tab-page">
+            <div class="section-header">
+                <h2>🧩 Web Tools & Apps</h2>
+                <p>Built-in utilities running entirely in your browser.</p>
+            </div>
+            <div class="explorer-grid" id="apps-grid"></div>
+        </section>
+
+    </main>
+
+    <!-- Universal Preview & Embed Modal -->
+    <div id="preview-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="preview-title" class="modal-title">Resource Title</span>
+                <div class="modal-actions">
+                    <button id="btn-external-link" class="btn btn-secondary hidden">↗ Open External</button>
+                    <button id="btn-download" class="btn btn-primary">⬇ Download</button>
+                    <button id="btn-close-modal" class="btn btn-secondary">✖ Close</button>
+                </div>
+            </div>
+            <div id="preview-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
