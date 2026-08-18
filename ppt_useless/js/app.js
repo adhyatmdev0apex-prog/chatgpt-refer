@@ -275,22 +275,62 @@ class AppController {
         if (categorySelect) categorySelect.onchange = filterHandler;
 
         const webForm = document.getElementById('web-search-form');
-        const searchContainer = document.getElementById('search-frame-container');
-        const searchFrame = document.getElementById('search-frame');
-        const searchExtBtn = document.getElementById('btn-open-search-ext');
+        const resultsWrapper = document.getElementById('search-results-container');
+        const queryDisplay = document.getElementById('search-query-display');
+        const cardsGrid = document.getElementById('search-cards-grid');
 
         if (webForm) {
             webForm.onsubmit = (e) => {
                 e.preventDefault();
-                const q = document.getElementById('web-search-query').value;
-                const embedUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`;
-                
-                searchFrame.src = embedUrl;
-                searchContainer.classList.remove('hidden');
+                const queryInput = document.getElementById('web-search-query');
+                const query = queryInput ? queryInput.value.trim() : '';
+                const selectedRadio = document.querySelector('input[name="engine"]:checked');
+                const selectedEngine = selectedRadio ? selectedRadio.value : 'google';
 
-                searchExtBtn.onclick = () => {
-                    window.open(`https://duckduckgo.com/?q=${encodeURIComponent(q)}`, '_blank');
-                };
+                if (!query) return;
+
+                if (queryDisplay) queryDisplay.textContent = query;
+
+                const engines = [
+                    { id: 'google', name: 'Google', icon: '🌐', url: `https://www.google.com/search?q=${encodeURIComponent(query)}` },
+                    { id: 'bing', name: 'Bing', icon: '🔵', url: `https://www.bing.com/search?q=${encodeURIComponent(query)}` },
+                    { id: 'duckduckgo', name: 'DuckDuckGo', icon: '🦆', url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}` }
+                ];
+
+                // If radio buttons exist, filter by selection. If not, show all 3.
+                const activeEngines = selectedRadio ? engines.filter(eng => eng.id === selectedEngine) : engines;
+
+                if (cardsGrid) {
+                    cardsGrid.innerHTML = '';
+                    activeEngines.forEach(engine => {
+                        const card = document.createElement('div');
+                        card.className = 'search-card';
+                        // Inline styles added to ensure the button looks right even if CSS is missing
+                        card.innerHTML = `
+                            <div class="search-card-header" style="font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                                <span>${engine.icon}</span> <span>${engine.name}</span>
+                            </div>
+                            <div class="search-card-desc" style="color: var(--text-muted); margin-bottom: 1rem;">
+                                Search ${engine.name} for "${query}"
+                            </div>
+                            <button class="btn btn-primary search-card-btn" style="width: 100%;">
+                                Open ${engine.name} Results ↗
+                            </button>
+                        `;
+
+                        card.querySelector('.search-card-btn').onclick = () => {
+                            window.open(engine.url, '_blank');
+                        };
+
+                        cardsGrid.appendChild(card);
+                    });
+                }
+
+                if (resultsWrapper) resultsWrapper.classList.remove('hidden');
+                
+                // Safety catch: hide the old iframe container if it's still in the HTML
+                const oldFrameContainer = document.getElementById('search-frame-container');
+                if (oldFrameContainer) oldFrameContainer.classList.add('hidden');
             };
         }
 
