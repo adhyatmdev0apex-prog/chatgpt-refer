@@ -30,7 +30,7 @@ const State = {
             name: 'Browsercraft', 
             desc: 'Minecraft 1.2.5', 
             icon: '⛏️', 
-            url: './games/browsercraft/index.html', 
+            url: './games/browsercraft/build/index.html', 
             allowIframe: true, 
             isLocal: true 
         }
