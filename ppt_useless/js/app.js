@@ -24,13 +24,13 @@ const State = {
             allowIframe: true, 
             isLocal: true 
         },
-        // ADD BROWSERCRAFT HERE 👇
+        // ADD MINECRAFT WEB CLIENT HERE 👇
         { 
-            id: 'browsercraft', 
-            name: 'Browsercraft', 
-            desc: 'Minecraft 1.2.5', 
+            id: 'minecraft-web', 
+            name: 'Minecraft Web Client', 
+            desc: 'HTML5/WebGL Edition', 
             icon: '⛏️', 
-            url: './games/browsercraft/build/index.html', 
+            url: './games/minecraft-web-client/index.html', 
             allowIframe: true, 
             isLocal: true 
         }
