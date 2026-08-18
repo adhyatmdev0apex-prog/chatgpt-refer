@@ -24,15 +24,14 @@ const State = {
             allowIframe: true, 
             isLocal: true 
         },
-        // ADD MINECRAFT WEB CLIENT HERE 👇
         { 
             id: 'minecraft-web', 
             name: 'Minecraft Web Client', 
             desc: 'HTML5/WebGL Edition', 
             icon: '⛏️', 
-            url: './games/minecraft-web-client/index.html', 
+            url: 'https://mcraft.fun/', 
             allowIframe: true, 
-            isLocal: true 
+            isLocal: false 
         }
     ],
 
