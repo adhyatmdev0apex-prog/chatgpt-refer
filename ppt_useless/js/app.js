@@ -13,7 +13,7 @@ const State = {
         { id: 'itch', name: 'itch.io Web Games', icon: '🟪', url: 'https://itch.io/games/free/web', allowIframe: false }
     ],
 
-    // 💾 LOCAL GAMES
+// 💾 LOCAL GAMES
     localGames: [
         { 
             id: 'gfiles', 
@@ -21,6 +21,16 @@ const State = {
             desc: 'HTML5 Game Collection', 
             icon: '🎮', 
             url: './games/gfiles/index.html', 
+            allowIframe: true, 
+            isLocal: true 
+        },
+        // ADD BROWSERCRAFT HERE 👇
+        { 
+            id: 'browsercraft', 
+            name: 'Browsercraft', 
+            desc: 'Minecraft 1.2.5', 
+            icon: '⛏️', 
+            url: './games/browsercraft/index.html', 
             allowIframe: true, 
             isLocal: true 
         }
