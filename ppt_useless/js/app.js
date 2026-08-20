@@ -29,9 +29,9 @@ const State = {
             name: 'Minecraft Web Client', 
             desc: 'HTML5/WebGL Edition', 
             icon: '⛏️', 
-            url: 'https://mcraft.fun/', 
+            url: './games/minecraft-web/dist/index.html', 
             allowIframe: true, 
-            isLocal: false 
+            isLocal: true 
         }
     ],
 
