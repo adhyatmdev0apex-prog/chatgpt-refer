@@ -32,6 +32,15 @@ const State = {
             url: './games/minecraft-web-client/dist/index.html', 
             allowIframe: true, 
             isLocal: true 
+        },
+        { 
+            id: 'gta-vc-web', 
+            name: 'GTA: Vice City', 
+            desc: 'reVCDOS Web Engine', 
+            icon: '🌴', 
+            url: './games/reVCDOS-GTA-vice-city/index.html', 
+            allowIframe: true, 
+            isLocal: true 
         }
     ],
 
