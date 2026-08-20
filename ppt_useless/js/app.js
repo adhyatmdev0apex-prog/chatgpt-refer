@@ -29,7 +29,7 @@ const State = {
             name: 'Minecraft Web Client', 
             desc: 'HTML5/WebGL Edition', 
             icon: '⛏️', 
-            url: './games/minecraft-web/dist/index.html', 
+            url: './games/minecraft-web-client/dist/index.html', 
             allowIframe: true, 
             isLocal: true 
         }
