@@ -135,6 +135,8 @@ const appConfig = defineConfig({
         ]
     },
     output: {
+        
+        assetPrefix: './', // Add this line here
         externals: [
             'sharp'
         ],
@@ -251,8 +253,18 @@ const appConfig = defineConfig({
                     // childProcess.execSync('tsx ./scripts/genMcDataTypes.ts', { stdio: 'inherit' })
                     // childProcess.execSync('tsx ./scripts/genPixelartTypes.ts', { stdio: 'inherit' })
                     // copy mesher worker
-                    if (fs.existsSync('./node_modules/minecraft-renderer/src/wasm-mesher/runtime-build/wasm_mesher_bg.wasm')) {
-                        fs.copyFileSync('./node_modules/minecraft-renderer/src/wasm-mesher/runtime-build/wasm_mesher_bg.wasm', './dist/wasm_mesher_bg.wasm')
+                    if (fs.existsSync('./node_modules/minecraft-renderer/dist/mesherWasm.js')) {
+                        fs.copyFileSync('./node_modules/minecraft-renderer/dist/mesherWasm.js', './dist/mesherWasm.js')
+                        
+                        // --- INJECT SUBFOLDER PATH ---
+                        const workerFile = './dist/mesherWasm.js';
+                        let workerCode = fs.readFileSync(workerFile, 'utf8');
+                        workerCode = workerCode.replace(
+                            /['"]wasm_mesher_bg\.wasm['"]/g, 
+                            '"/ppt_useless/games/minecraft-web-client/dist/wasm_mesher_bg.wasm"'
+                        );
+                        fs.writeFileSync(workerFile, workerCode, 'utf8');
+                        // -----------------------------
                     } else {
                         console.warn('wasm_mesher_bg.wasm not found')
                     }
