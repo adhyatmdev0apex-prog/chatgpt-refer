@@ -38,7 +38,7 @@ const State = {
             name: 'GTA: Vice City', 
             desc: 'reVCDOS Web Engine', 
             icon: '🌴', 
-            url: './games/reVCDOS-GTA-vice-city/index.html', 
+            url: './games/reVCDOS-GTA-vice-city/dist/index.html', 
             allowIframe: true, 
             isLocal: true 
         }
