@@ -8,8 +8,8 @@ var wasm_content;
 const params = new URLSearchParams(window.location.search);
 
 // Base URLs
-const replaceFetch = (str) => str.replace("https://cdn.dos.zone/vcsky/", "/ppt_useless/games/reVCDOS-GTA-vice-city/unpacked/d387c6f45d823194bc47671214496367/vcsky/")
-const replaceBR = "/ppt_useless/games/reVCDOS-GTA-vice-city/unpacked/d387c6f45d823194bc47671214496367/vcbr/"
+const replaceFetch = (str) => str.replace("https://cdn.dos.zone/vcsky/", "/vcsky/")
+const replaceBR = "/vcbr/"
 
 // Configurable mode - show settings UI before play
 const configurableMode = params.get('configurable') === "1";
