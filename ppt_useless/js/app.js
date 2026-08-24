@@ -38,7 +38,7 @@ const State = {
             name: 'GTA: Vice City', 
             desc: 'reVCDOS Web Engine', 
             icon: '🌴', 
-            url: '/game/', 
+            url: 'https://blabla-useful-shit-games.onrender.com', 
             allowIframe: true, 
             isLocal: true 
         }
